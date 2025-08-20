@@ -1,5 +1,5 @@
-NNCommon.pas - основные константы и типы данных
-NeuralNetwork.pas - базовые классы и класс оболочки нейронной сети
-NNLosses.pas - функции потерь
-NNOptimizers - оптимизаторы
-layers\NNFullyConnectedLayer.pas - слой нейронной сети Fully Connected
+п»їNNCommon.pas - РѕСЃРЅРѕРІРЅС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹ Рё С‚РёРїС‹ РґР°РЅРЅС‹С…
+NeuralNetwork.pas - Р±Р°Р·РѕРІС‹Рµ РєР»Р°СЃСЃС‹ Рё РєР»Р°СЃСЃ РѕР±РѕР»РѕС‡РєРё РЅРµР№СЂРѕРЅРЅРѕР№ СЃРµС‚Рё
+NNLosses.pas - С„СѓРЅРєС†РёРё РїРѕС‚РµСЂСЊ
+NNOptimizers.pas - РѕРїС‚РёРјРёР·Р°С‚РѕСЂС‹
+layers\NNFullyConnectedLayer.pas - СЃР»РѕР№ РЅРµР№СЂРѕРЅРЅРѕР№ СЃРµС‚Рё Fully Connected
