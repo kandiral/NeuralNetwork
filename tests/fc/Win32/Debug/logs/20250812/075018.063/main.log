@@ -1,0 +1,127 @@
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_075029\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_075029\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_075029\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075029\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075029\cfg.json
+---- MSE
+Loss= 1.0295268
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 47, in <module>
+    save_float64_value_to_binary_file( file_path, loss_value )
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\my_funcs.py", line 37, in save_float64_value_to_binary_file
+    if not isinstance(value, numbers.Real):
+                             ^^^^^^^
+NameError: name 'numbers' is not defined. Did you forget to import 'numbers'?
+
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075029\loss.dat')
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075029\grads.dat')
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_075144\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_075144\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_075144\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075144\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075144\cfg.json
+---- MSE
+Loss= 1.0295268
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 47, in <module>
+    save_float64_value_to_binary_file( file_path, loss_value )
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\my_funcs.py", line 39, in save_float64_value_to_binary_file
+    raise TypeError(f"ќжидалось число, получено: {type(value).__name__}")
+TypeError: ќжидалось число, получено: str
+
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075144\loss.dat')
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075144\grads.dat')
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_075254\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_075254\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_075254\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075254\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075254\cfg.json
+---- MSE
+Loss= 1.0295268
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 47, in <module>
+    save_float64_value_to_binary_file( loss_value, file_path )
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\my_funcs.py", line 39, in save_float64_value_to_binary_file
+    raise TypeError(f"ќжидалось число, получено: {type(value).__name__}")
+TypeError: ќжидалось число, получено: EagerTensor
+
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075254\loss.dat')
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075254\grads.dat')
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_075648\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_075648\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_075648\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075648\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075648\cfg.json
+---- MSE
+Loss= 1.0295268
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 47, in <module>
+    save_float64_value_to_binary_file( loss_value, file_path )
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\my_funcs.py", line 38, in save_float64_value_to_binary_file
+    if isinstance(value, tf.Tensor):
+                         ^^
+NameError: name 'tf' is not defined
+
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075648\loss.dat')
+[TMainForm.LossesTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075648\grads.dat')
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_075724\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_075724\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_075724\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075724\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_075724\cfg.json
+---- MSE
+Loss= 1.0295268
+grads:
+[ 0.0364273   0.31455562 -0.21392754  0.10735332  0.00295268  0.32519189
+ -0.18871652 -0.26335764  0.19758968  0.06691404]
+

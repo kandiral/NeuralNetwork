@@ -1,0 +1,29 @@
+unit RandGen;
+
+interface
+
+type
+  TRandGen = class
+  public
+    function Next32: Uint32; virtual; abstract;
+    function Next64: Uint64; virtual; abstract;
+  end;
+
+  TRandGenSingle = class( TRandGen )
+  public
+    function NextFloat: Single; virtual; abstract;
+  end;
+
+  TRandGenDouble = class( TRandGen )
+  public
+    function NextFloat: Double; virtual; abstract;
+  end;
+
+  TRandGenExtended = class( TRandGen )
+  public
+    function NextFloat: Extended; virtual; abstract;
+  end;
+
+implementation
+
+end.

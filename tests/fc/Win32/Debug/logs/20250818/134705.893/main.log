@@ -1,0 +1,17 @@
+[TMainForm.FCTest] =======================================================
+[TMainForm.FCTest] XData=[1.76405236,0.4001572,0.97873795,2.24089327,1.86755797]
+[TMainForm.FCTest] YData=[18.22722104,-9.16421802]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+xdata: [[1.76405236 0.4001572  0.97873795 2.24089327 1.86755797]]
+w0: [[ 2.52810471 -0.1996856   0.9574759   3.48178654  2.73511594]
+ [-2.95455577  0.90017682 -1.30271442 -1.20643768 -0.17880305]]
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py", line 80, in <module>
+    dense.set_weights([w])
+  File "C:\Python\Python312\Lib\site-packages\keras\src\layers\layer.py", line 706, in set_weights
+    raise ValueError(
+ValueError: Layer dense weight shape (5, 2) is not compatible with provided weight shape (2, 5).
+
+[TMainForm.FCTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250818\FC_Forward134708\ydata.dat')

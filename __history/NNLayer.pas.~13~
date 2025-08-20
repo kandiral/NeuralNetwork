@@ -1,0 +1,90 @@
+unit NNLayer;
+
+interface
+
+uses
+  WinAPI.Windows,
+  System.Types, System.Classes, System.SysUtils,
+  NNCommon;
+
+type
+  TNNLayer = class
+  private
+  protected
+    FNeuralNetwork: TObject;
+    FWeights: TNNDynArray;
+    FBiases: TNNDynArray;
+    FUseBiases: boolean;
+    FOutput: TNNDynArray;
+    FForwardPropagation: TNNProcess;
+    FInitWeights: TNNProcess;
+    FInitBiases: TNNProcess;
+    FBackwardPropagation: TNNProcess;
+    procedure EmptyProcess;
+    function GetBiases: PNNDynArray; inline;
+    function GetWeights: PNNDynArray; inline;
+    function GetOutput: PNNDynArray; inline;
+  public
+    class function CreateFromStream( const ANeuralNetwork: TObject; const AStream: TStream ): TNNLayer;
+    procedure LoadFromStream( const AStream: TStream ); virtual; abstract;
+    procedure SaveToStream( const AStream: TStream ); virtual; abstract;
+    constructor Create( const ANeuralNetwork: TObject ); virtual;
+
+    property Output: PNNDynArray read GetOutput;
+    property Weights: PNNDynArray read GetWeights;
+    property Biases: PNNDynArray read GetBiases;
+    property UseBiases: boolean read FUseBiases;
+    procedure Build; virtual; abstract;
+    property InitWeights: TNNProcess read FInitWeights;
+    property InitBiases: TNNProcess read FInitBiases;
+    property ForwardPropagation: TNNProcess read FForwardPropagation;
+    property BackwardPropagation: TNNProcess read FBackwardPropagation;
+  end;
+
+implementation
+
+uses NNFullyConnectedLayer;
+
+{ TNNLayer }
+
+constructor TNNLayer.Create;
+begin
+  FUseBiases := True;
+end;
+
+class function TNNLayer.CreateFromStream( const ANeuralNetwork: TObject; const AStream: TStream ): TNNLayer;
+var
+  code: uint32;
+begin
+  AStream.Read( code, 4 );
+  case code of
+    NN_FULLY_CONNECTED_LAYER: begin
+      Result := TNNFullyConnectedLayer.Create( ANeuralNetwork );
+      Result.LoadFromStream( AStream );
+      exit;
+    end;
+  end;
+  raise Exception.Create( 'Error Unknown Layer Pos=' + UIntToStr( AStream.Position - 1 ) );
+end;
+
+procedure TNNLayer.EmptyProcess;
+begin
+
+end;
+
+function TNNLayer.GetBiases: PNNDynArray;
+begin
+  Result := @FBiases;
+end;
+
+function TNNLayer.GetOutput: PNNDynArray;
+begin
+  Result := @FOutput;
+end;
+
+function TNNLayer.GetWeights: PNNDynArray;
+begin
+  Result := @FWeights;
+end;
+
+end.

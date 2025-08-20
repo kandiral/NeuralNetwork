@@ -1,0 +1,939 @@
+unit MainUnit;
+
+interface
+
+{$I ../../NNConfig.inc}
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, NNCommon, NeuralNetwork, NNFullyConnectedLayer,
+  KRLogger, Vcl.ComCtrls, KRThread, System.Math, Vcl.ExtCtrls,
+  KRComponentCollection, KRConfig, KRIniConfig, KRStrUtils, KRComboBox,
+  KRValueEdit, KRJSON, KRCheckBox, KRLogical;
+
+const
+  WM_LOG = WM_USER;
+
+type
+  TMainForm = class(TForm)
+    Button1: TButton;
+    reLogs: TRichEdit;
+    Splitter1: TSplitter;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    Panel1: TPanel;
+    TabSheet2: TTabSheet;
+    Panel2: TPanel;
+    KRIniConfig1: TKRIniConfig;
+    cbLossesType: TKRBLComboBox;
+    cfgLossesType: TKRIniCfgParam;
+    veLossesCount: TKRBLValueEdit;
+    cfgLossesCount: TKRIniCfgParam;
+    cbLossesGeneratorInit: TKRBLComboBox;
+    cfgLossesInit: TKRIniCfgParam;
+    cfgLossesInitSet: TKRIniCfgParam;
+    KRValueEdit1: TKRValueEdit;
+    btnLossesStart: TButton;
+    chLossesUseZero: TKRCheckBox;
+    cfgLossesUseZero: TKRIniCfgParam;
+    chLossesUseNeg: TKRCheckBox;
+    cfgLossesUseNeg: TKRIniCfgParam;
+    TabSheet3: TTabSheet;
+    Panel3: TPanel;
+    veFCInputsCount: TKRBLValueEdit;
+    GroupBox1: TGroupBox;
+    lbFCLayersList: TListBox;
+    cbFCActivation: TKRBLComboBox;
+    veFCOutputsCount: TKRBLValueEdit;
+    cbFCInitWeights: TKRBLComboBox;
+    btnFCForward: TButton;
+    veFCCount: TKRBLValueEdit;
+    btnFCBackward: TButton;
+    cbFCInputData: TKRBLComboBox;
+    cbFCInputDataRandSeed: TKRBLValueEdit;
+    chFCInputDataUseSeed: TKRCheckBox;
+    cbFCLossFunc: TKRBLComboBox;
+    cbFCInitBiases: TKRBLComboBox;
+    btnFCAddLayer: TButton;
+    btnFCDelLayer: TButton;
+    cfgFCLossFunc: TKRIniCfgParam;
+    cfgFCInputsCount: TKRIniCfgParam;
+    cfgFCUseBiases: TKRIniCfgParam;
+    cfgFCCount: TKRIniCfgParam;
+    cfgFCLayersCount: TKRIniCfgParam;
+    cfgFCActivation: TKRIniCfgParam;
+    cfgFCOutputsCount: TKRIniCfgParam;
+    cfgFCInitWeights: TKRIniCfgParam;
+    cfgFCRandSeed: TKRIniCfgParam;
+    cfgFCUseSeed: TKRIniCfgParam;
+    cfgFCInitBiases: TKRIniCfgParam;
+    cfgFCInputDataRandSeed: TKRIniCfgParam;
+    cfgFCInputDataUseSeed: TKRIniCfgParam;
+    chFCUseBiases: TKRCheckBox;
+    cfgFCInputData: TKRIniCfgParam;
+    veFCRandSeed: TKRBLValueEdit;
+    chFCUseSeed: TKRCheckBox;
+    cbFCOutputTrue: TKRBLComboBox;
+    veFCOutputTrueRandSeed: TKRBLValueEdit;
+    chFCOutputTrueUseSeed: TKRCheckBox;
+    cfgFCOutputTrueUseSeed: TKRIniCfgParam;
+    cfgFCOutputTrueRandSeed: TKRIniCfgParam;
+    cfgFCOutputTrue: TKRIniCfgParam;
+    procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure btnLossesStartClick(Sender: TObject);
+    procedure btnFCForwardClick(Sender: TObject);
+    procedure lbFCLayersListClick(Sender: TObject);
+    procedure btnFCAddLayerClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnFCBackwardClick(Sender: TObject);
+  private
+    procedure WMLog( var AMsg: TMessage ); message WM_LOG;
+    procedure LogEvent( ASender: TObject; const ATime: TSystemTime; const AText: AnsiString; ALogType: TKRLogType );
+    procedure FCLayersUpdate;
+    procedure FCLayerParamsUpdate;
+  public
+    destroing: boolean;
+    appPath, pyPath, dataPath: String;
+    logPref: AnsiString;
+    mainLogger: TKRLoggerA;
+
+
+    function do_cmd( const ACmd: String ): cardinal;
+    function do_cmd_thread(AThread: TThread; AData: Pointer): Pointer;
+
+    procedure SaveFloatArrayToFile( const AFileName: TFileName; AData: PNNFloat; ACount: int32 );
+    function LoadFloatValueFromFile( const AFileName: TFileName ): NNFloat;
+    function LoadFloatArrayFromFile( const AFileName: TFileName; ACount: int32; var AArray: TNNDynArray ): boolean;
+
+    function DiffFloat( AValue1, AValue2: NNFloat; var AStrRes: String ): boolean;
+
+    procedure Log( const AMethod, AText: AnsiString ); inline;
+    procedure LogErr( const AMethod, AText: AnsiString ); inline;
+    function PrintDynArray( var AArray: TNNDynArray ): String;
+    function PrintArray( AArray: PNNFloat; ACount: int32 ): String;
+  end;
+
+var
+  MainForm: TMainForm;
+
+implementation
+
+uses mt19937, NNLosses;
+
+const
+  FC_LAYERS_SECTION = 'FCLayer';
+
+{$R *.dfm}
+
+procedure TMainForm.btnFCAddLayerClick(Sender: TObject);
+var
+  n: int32;
+  //s: String;
+begin
+  n := cfgFCLayersCount.Value;
+  //s := FC_LAYERS_SECTION + KRUInt32ToStr( n );
+  cfgFCLayersCount.Value := n + 1;
+  FCLayersUpdate;
+end;
+
+
+procedure TMainForm.btnFCBackwardClick(Sender: TObject);
+var
+  i: int32;
+  _pth, _pth0, s: String;
+  rnd: TMT19937;
+  js, jso: TKRJSONObject;
+  jsa: TKRJSONArray;
+  fs: TFormatSettings;
+  _count, _layersCount: int32;
+  fc, fc0: TNNFullyConnectedLayer;
+  nn: TNeuralNetwork;
+  xData, fla, yTrue: TNNDynArray;
+  dw: uint32;
+  i64: int64;
+begin
+
+  btnFCForward.Enabled := false;
+  Log( 'FCForward', '==== Delphi Test ===================================================' );
+  fs.DecimalSeparator := '.';
+
+  _count := cfgFCCount.Value;
+  _layersCount := cfgFCLayersCount.Value;
+
+  _pth := FormatDateTime( 'yyyymmdd', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\FC_Forward' + FormatDateTime( 'hhnnss', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\';
+  //Log( 'FCForward', '_pth=' + _pth );
+  _pth0 := _pth;
+  _pth := dataPath + _pth;
+
+  rnd := TMT19937.Create;
+  js := TKRJSONObject.Create;
+  nn := TNeuralNetwork.Create;
+  try
+    js.AddChild( TKRJSONInt.Create( 'count', _count ) );
+    nn.InputsCount := cfgFCInputsCount.Value;
+    js.AddChild( TKRJSONInt.Create( 'inputsCount', nn.InputsCount ) );
+    jsa := TKRJSONArray( js.AddChild( TKRJSONArray.Create( 'layers' ) ) );
+    for I := 0 to _layersCount - 1 do begin
+      fc := TNNFullyConnectedLayer.Create;
+      nn.AddLayer( fc );
+
+      s := FC_LAYERS_SECTION + KRUInt32ToStr( i );
+      jso := TKRJSONObject( jsa.AddChild( TKRJSONObject.Create ) );
+
+      fc.ActivationMethod := TNNActivationMethod( KRIniConfig1.ReadInteger( s, cfgFCActivation.Name, cfgFCActivation.DefaultVar ) );
+      jso.AddChild( TKRJSONInt.Create( 'activation', int32( fc.ActivationMethod ) ) );
+
+      fc.OutputsCount := KRIniConfig1.ReadInteger( s, cfgFCOutputsCount.Name, cfgFCOutputsCount.DefaultVar );
+      jso.AddChild( TKRJSONInt.Create( 'outputsCount', fc.OutputsCount ) );
+
+      fc.UseBiases := KRIniConfig1.ReadBool( s, cfgFCUseBiases.Name, cfgFCUseBiases.DefaultVar );
+      jso.AddChild( TKRJSONBool.Create( 'useBiases', fc.UseBiases ) );
+
+      fc.InitializationData.InitWeightsData.InitMethod := TNNInitMethod( KRIniConfig1.ReadInteger( s, cfgFCInitWeights.Name, cfgFCInitWeights.DefaultVar ) );
+      fc.InitializationData.InitWeightsData._range := 2;
+      fc.InitializationData.InitWeightsData._offset := -1;
+
+      fc.InitializationData.InitBiasesData.InitMethod := TNNInitMethod( KRIniConfig1.ReadInteger( s, cfgFCInitBiases.Name, cfgFCInitBiases.DefaultVar ) );
+      fc.InitializationData.InitBiasesData._range := 0.2;
+      fc.InitializationData.InitBiasesData._offset := -0.1;
+
+      fc0 := fc;
+    end;
+    nn.MT19937Params._randomize := not Boolean( cfgFCUseSeed.Value );
+    nn.MT19937Params.seed := cfgFCRandSeed.Value;
+    nn.LossFunction := TNNLosses( Int32( cfgFCLossFunc.Value ) );
+    js.AddChild( TKRJSONInt.Create( 'lossFunc', Int32( nn.LossFunction ) ) );
+
+    nn.Build;
+    nn.Initialize;
+
+    for I := 0 to _layersCount - 1 do begin
+      SaveFloatArrayToFile( _pth + 'w' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Weights, nn.Layers[ i ].WeightsCount );
+      if nn.Layers[ i ].UseBiases then
+        SaveFloatArrayToFile( _pth + 'b' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Biases, nn.Layers[ i ].BiasesCount );
+    end;
+
+    if chFCInputDataUseSeed.Checked then begin
+      dw := cfgFCInputDataRandSeed.Value;
+      rnd.Seed := dw;
+    end else begin
+      if not QueryPerformanceCounter( i64 ) then i64 := GetTickCount;
+      rnd.Seed := ( UInt64( Random( MAXINT ) ) shl 32 ) xor UInt64( i64 );
+    end;
+    rnd.Init;
+    SetLength( xData, nn.InputsCount );
+    i := cfgFCInputData.Value;
+    case i of
+      0: for I := 0 to nn.InputsCount - 1 do xData[ i ] := 0;
+      1: for I := 0 to nn.InputsCount - 1 do xData[ i ] := 1;
+      2: for I := 0 to nn.InputsCount - 1 do xData[ i ] := rnd.NormalGaussDouble;
+      3: for I := 0 to nn.InputsCount - 1 do xData[ i ] := rnd.UniformDouble;
+    end;
+    SaveFloatArrayToFile( _pth + 'xdata.dat', @xData[ 0 ], nn.InputsCount );
+    Log( 'FCForward', 'XData=' + PrintDynArray( xData ) );
+
+    if chFCOutputTrueUseSeed.Checked then begin
+      dw := cfgFCOutputTrueRandSeed.Value;
+      rnd.Seed := dw;
+    end else begin
+      if not QueryPerformanceCounter( i64 ) then i64 := GetTickCount;
+      rnd.Seed := ( UInt64( Random( MAXINT ) ) shl 32 ) xor UInt64( i64 );
+    end;
+    rnd.Init;
+    SetLength( yTrue, nn.OutputsCount );
+    i := cfgFCOutputTrue.Value;
+    case i of
+      0: for I := 0 to nn.OutputsCount - 1 do yTrue[ i ] := 0;
+      1: for I := 0 to nn.OutputsCount - 1 do yTrue[ i ] := 1;
+      2: for I := 0 to nn.OutputsCount - 1 do yTrue[ i ] := rnd.NormalGaussDouble;
+      3: for I := 0 to nn.OutputsCount - 1 do yTrue[ i ] := rnd.UniformDouble;
+    end;
+    SaveFloatArrayToFile( _pth + 'ytrue.dat', @yTrue[ 0 ], nn.OutputsCount );
+    Log( 'FCForward', 'YTrue=' + PrintDynArray( yTrue ) );
+
+
+    for I := 0 to _count - 1 do begin
+      nn.BackwardPropagation( @xData[ 0 ], @yTrue[ 0 ] );
+    end;
+
+
+    Log( 'FCForward', 'YData=' + PrintArray( nn.Output, nn.OutputsCount ) );
+
+    js.SaveToFile( _pth + 'cfg.json' );
+    do_cmd( pyPath + 'fc.cmd ' + _pth0 );
+
+    _pth0 := _pth + 'ydata.dat';
+    if not FileExists( _pth0 ) then begin
+      LogErr( 'FCForward', 'not FileExists(''' + _pth0 + ''')' );
+    end else if not LoadFloatArrayFromFile( _pth0, nn.Layers[ nn.LayersCount - 1 ].OutputsCount, fla ) then begin
+      LogErr( 'FCForward', 'not LoadFloatArrayFromFile(''' + _pth0 + ''')' );
+    end else begin
+      Log( 'FCForward', '== YDataDiff: ' );
+      for I := 0 to nn.Layers[ nn.LayersCount - 1 ].OutputsCount - 1 do begin
+        if not DiffFloat( PNNFloat( NativeUint( nn.Output ) + 8 * i )^, fla[ i ], s ) then begin
+          LogErr( 'FCForward', '= YData[' + KRUInt32ToStr( i ) + ']: ' + s );
+        end else begin
+          Log( 'FCForward', '= YData[' + KRUInt32ToStr( i ) + ']: ' + s );
+        end;
+      end;
+    end;
+
+
+  finally
+    nn.Free;
+    js.Free;
+    rnd.Free;
+    btnFCForward.Enabled := true;
+  end;
+end;
+
+procedure TMainForm.btnFCForwardClick(Sender: TObject);
+var
+  i: int32;
+  _pth, _pth0, s: String;
+  rnd: TMT19937;
+  js, jso: TKRJSONObject;
+  jsa: TKRJSONArray;
+  fs: TFormatSettings;
+  _layersCount: int32;
+  fc, fc0: TNNFullyConnectedLayer;
+  nn: TNeuralNetwork;
+  xData, fla: TNNDynArray;
+  dw: uint32;
+  i64: int64;
+begin
+
+  btnFCForward.Enabled := false;
+  Log( 'FCForward', '==== Delphi Test ===================================================' );
+  fs.DecimalSeparator := '.';
+
+  _layersCount := cfgFCLayersCount.Value;
+
+  _pth := FormatDateTime( 'yyyymmdd', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\FC_Forward' + FormatDateTime( 'hhnnss', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\';
+  //Log( 'FCForward', '_pth=' + _pth );
+  _pth0 := _pth;
+  _pth := dataPath + _pth;
+
+  rnd := TMT19937.Create;
+  js := TKRJSONObject.Create;
+  nn := TNeuralNetwork.Create;
+  try
+    nn.InputsCount := cfgFCInputsCount.Value;
+    js.AddChild( TKRJSONInt.Create( 'inputsCount', nn.InputsCount ) );
+    jsa := TKRJSONArray( js.AddChild( TKRJSONArray.Create( 'layers' ) ) );
+    for I := 0 to _layersCount - 1 do begin
+      fc := TNNFullyConnectedLayer.Create;
+      nn.AddLayer( fc );
+
+      s := FC_LAYERS_SECTION + KRUInt32ToStr( i );
+      jso := TKRJSONObject( jsa.AddChild( TKRJSONObject.Create ) );
+
+      fc.ActivationMethod := TNNActivationMethod( KRIniConfig1.ReadInteger( s, cfgFCActivation.Name, cfgFCActivation.DefaultVar ) );
+      jso.AddChild( TKRJSONInt.Create( 'activation', int32( fc.ActivationMethod ) ) );
+
+      fc.OutputsCount := KRIniConfig1.ReadInteger( s, cfgFCOutputsCount.Name, cfgFCOutputsCount.DefaultVar );
+      jso.AddChild( TKRJSONInt.Create( 'outputsCount', fc.OutputsCount ) );
+
+      fc.UseBiases := KRIniConfig1.ReadBool( s, cfgFCUseBiases.Name, cfgFCUseBiases.DefaultVar );
+      jso.AddChild( TKRJSONBool.Create( 'useBiases', fc.UseBiases ) );
+
+      fc.InitializationData.InitWeightsData.InitMethod := TNNInitMethod( KRIniConfig1.ReadInteger( s, cfgFCInitWeights.Name, cfgFCInitWeights.DefaultVar ) );
+      fc.InitializationData.InitWeightsData._range := 2;
+      fc.InitializationData.InitWeightsData._offset := -1;
+
+      fc.InitializationData.InitBiasesData.InitMethod := TNNInitMethod( KRIniConfig1.ReadInteger( s, cfgFCInitBiases.Name, cfgFCInitBiases.DefaultVar ) );
+      fc.InitializationData.InitBiasesData._range := 0.2;
+      fc.InitializationData.InitBiasesData._offset := -0.1;
+
+      fc0 := fc;
+    end;
+    nn.MT19937Params._randomize := not Boolean( cfgFCUseSeed.Value );
+    nn.MT19937Params.seed := cfgFCRandSeed.Value;
+    nn.LossFunction := TNNLosses( Int32( cfgFCLossFunc.Value ) );
+
+    nn.Build;
+    nn.Initialize;
+
+    for I := 0 to _layersCount - 1 do begin
+      SaveFloatArrayToFile( _pth + 'w' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Weights, nn.Layers[ i ].WeightsCount );
+      if nn.Layers[ i ].UseBiases then
+        SaveFloatArrayToFile( _pth + 'b' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Biases, nn.Layers[ i ].BiasesCount );
+    end;
+
+    if chFCInputDataUseSeed.Checked then begin
+      dw := cfgFCInputDataRandSeed.Value;
+      rnd.Seed := dw;
+    end else begin
+      if not QueryPerformanceCounter( i64 ) then i64 := GetTickCount;
+      rnd.Seed := ( UInt64( Random( MAXINT ) ) shl 32 ) xor UInt64( i64 );
+    end;
+    rnd.Init;
+
+    SetLength( xData, nn.InputsCount );
+    i := cfgFCInputData.Value;
+    case i of
+      0: for I := 0 to nn.InputsCount - 1 do xData[ i ] := 0;
+      1: for I := 0 to nn.InputsCount - 1 do xData[ i ] := 1;
+      2: for I := 0 to nn.InputsCount - 1 do xData[ i ] := rnd.NormalGaussDouble;
+      3: for I := 0 to nn.InputsCount - 1 do xData[ i ] := rnd.UniformDouble;
+    end;
+    SaveFloatArrayToFile( _pth + 'xdata.dat', @xData[ 0 ], nn.InputsCount );
+    Log( 'FCForward', 'XData=' + PrintDynArray( xData ) );
+
+    nn.ForwardPropagation( @xData[ 0 ] );
+    Log( 'FCForward', 'YData=' + PrintArray( nn.Output, nn.OutputsCount ) );
+
+    js.SaveToFile( _pth + 'cfg.json' );
+    do_cmd( pyPath + 'fc.cmd ' + _pth0 );
+
+    _pth0 := _pth + 'ydata.dat';
+    if not FileExists( _pth0 ) then begin
+      LogErr( 'FCForward', 'not FileExists(''' + _pth0 + ''')' );
+    end else if not LoadFloatArrayFromFile( _pth0, nn.Layers[ nn.LayersCount - 1 ].OutputsCount, fla ) then begin
+      LogErr( 'FCForward', 'not LoadFloatArrayFromFile(''' + _pth0 + ''')' );
+    end else begin
+      Log( 'FCForward', '== YDataDiff: ' );
+      for I := 0 to nn.Layers[ nn.LayersCount - 1 ].OutputsCount - 1 do begin
+        if not DiffFloat( PNNFloat( NativeUint( nn.Output ) + 8 * i )^, fla[ i ], s ) then begin
+          LogErr( 'FCForward', '= YData[' + KRUInt32ToStr( i ) + ']: ' + s );
+        end else begin
+          Log( 'FCForward', '= YData[' + KRUInt32ToStr( i ) + ']: ' + s );
+        end;
+      end;
+    end;
+
+
+  finally
+    nn.Free;
+    js.Free;
+    rnd.Free;
+    btnFCForward.Enabled := true;
+  end;
+end;
+
+procedure TMainForm.btnLossesStartClick(Sender: TObject);
+var
+  i64: int64;
+  i, n: int32;
+  dw: uint32;
+  _pth, _pth0: String;
+  rnd: TMT19937;
+  yTrue, yPred, grad: TNNDynArray;
+  s0, s1: String;
+  lf: TNNLossFunction;
+  _main: NNFloat;
+  js: TKRJSONObject;
+  fl: NNFloat;
+  fla: TNNDynArray;
+  _useNeg, _useZero: boolean;
+  fs: TFormatSettings;
+begin
+  btnLossesStart.Enabled := false;
+  Log( 'LossesTest', '==== Delphi Test ===================================================' );
+  fs.DecimalSeparator := '.';
+  _useZero := cfgLossesUseZero.Value;
+  _useNeg := cfgLossesUseNeg.Value;
+
+  i := cfgLossesType.Value;
+  lf := TNNLossesClassList[ TNNLosses( i ) ].Create;
+
+  _pth := FormatDateTime( 'yyyymmdd', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\losses_' + lf.FuncName + '_' + FormatDateTime( 'hhnnss', now );
+  CreateDirectory( PChar( dataPath + _pth ), nil );
+  _pth := _pth + '\';
+  //Log( 'LossesTest', '_pth=' + _pth );
+  _pth0 := _pth;
+  _pth := dataPath + _pth;
+  Log( 'LossesTest', 'FuncName=' + lf.FuncName );
+
+  i := cfgLossesType.Value;
+  lf := TNNLossesClassList[ TNNLosses( i ) ].Create;
+
+  rnd := TMT19937.Create;
+  js := TKRJSONObject.Create;
+  try
+    i := cfgLossesInit.Value;
+    if i = 0 then begin
+      dw := cfgLossesInitSet.Value;
+      rnd.Seed := dw;
+    end else begin
+      if not QueryPerformanceCounter( i64 ) then i64 := GetTickCount;
+      rnd.Seed := ( UInt64( Random( MAXINT ) ) shl 32 ) xor UInt64( i64 );
+    end;
+    rnd.Init;
+
+    n := cfgLossesCount.Value;
+    SetLength( yTrue, n );
+    SetLength( yPred, n );
+    SetLength( grad, n );
+    for I := 0 to n - 1 do begin
+      if _useZero and ( i < 2 ) then yTrue[ i ] := 0 else begin
+        {$IFDEF NNFLOAT_SINGLE}
+          yTrue[ i ] := rnd.UniformSingle;
+        {$ELSE IFDEF NNFLOAT_DOUBLE}
+          yTrue[ i ] := rnd.UniformDouble;
+        {$ELSE}
+          yTrue[ i ] := rnd.UniformExtended;
+        {$ENDIF}
+      end;
+      if not _useNeg then yTrue[ i ] := abs( yTrue[ i ] );
+      s0 := s0 + FormatFloat( '0.########', yTrue[ i ], fs ) + ',';
+
+      if _useZero and ( ( i = 0 ) or ( i = 2 ) ) then yPred[ i ] := 0 else begin
+        {$IFDEF NNFLOAT_SINGLE}
+          yPred[ i ] := rnd.UniformSingle;
+        {$ELSE IFDEF NNFLOAT_DOUBLE}
+          yPred[ i ] := rnd.UniformDouble;
+        {$ELSE}
+          yPred[ i ] := rnd.UniformExtended;
+        {$ENDIF}
+      end;
+      if not _useNeg then yPred[ i ] := abs( yPred[ i ] );
+      s1 := s1 + FormatFloat( '0.########', yPred[ i ], fs ) + ',';
+    end;
+    Log( 'LossesTest', 'yTrue=[' + Copy( s0, 1, Length( s0 ) - 1 ) + ']' );
+    Log( 'LossesTest', 'yPred=[' + Copy( s1, 1, Length( s1 ) - 1 ) + ']' );
+
+    _main := lf.ForwardPass( @yTrue[ 0 ], @yPred[ 0 ], n );
+    Log( 'LossesTest', 'Loss=' + FormatFloat( '0.########', _main, fs ) );
+
+    lf.BackwardPass( @yTrue[ 0 ], @yPred[ 0 ], n, @grad[ 0 ] );
+    s0 := FormatFloat( '0.########', grad[ 0 ], fs );
+    for I := 1 to n - 1 do s0 := s0 + ',' + FormatFloat( '0.########', grad[ i ], fs );
+    Log( 'LossesTest', 'grad=[' + s0 + ']' );
+
+    SaveFloatArrayToFile( _pth + 'ytrue.dat', @yTrue[ 0 ], n );
+    SaveFloatArrayToFile( _pth + 'ypred.dat', @yPred[ 0 ], n );
+
+    js.AddChild( TKRJSONString.Create( 'lf', lf.FuncName ) );
+    js.AddChild( TKRJSONInt.Create( 'cnt', n ) );
+    js.SaveToFile( _pth + 'cfg.json' );
+
+    do_cmd( pyPath + 'losses.cmd ' + _pth0 );
+
+    _pth0 := _pth + 'loss.dat';
+    if not FileExists( _pth0 ) then begin
+      LogErr( 'LossesTest', 'not FileExists(''' + _pth0 + ''')' );
+    end else begin
+      fl := LoadFloatValueFromFile( _pth0 );
+      if not DiffFloat( _main, fl, s0 ) then begin
+        LogErr( 'LossesTest', '== LossValueDiff: ' + s0 );
+      end else begin
+        Log( 'LossesTest', '== LossValueDiff: ' + s0 );
+      end;
+    end;
+
+    _pth0 := _pth + 'grads.dat';
+    if not FileExists( _pth0 ) then begin
+      LogErr( 'LossesTest', 'not FileExists(''' + _pth0 + ''')' );
+    end else if not LoadFloatArrayFromFile( _pth0, n, fla ) then begin
+      LogErr( 'LossesTest', 'not LoadFloatArrayFromFile(''' + _pth0 + ''')' );
+    end else begin
+      Log( 'LossesTest', '== GradsDiff: ' );
+      for I := 0 to n - 1 do begin
+        if not DiffFloat( grad[ i ], fla[ i ], s0 ) then begin
+          LogErr( 'LossesTest', '= Grad[' + KRUInt32ToStr( i ) + ']: ' + s0 );
+        end else begin
+          Log( 'LossesTest', '= Grad[' + KRUInt32ToStr( i ) + ']: ' + s0 );
+        end;
+      end;
+    end;
+
+  finally
+    js.Free;
+    lf.Free;
+    rnd.Free;
+    btnLossesStart.Enabled := true;
+  end;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+{var
+  fc: TNNFullyConnectedLayer;
+  ss: TStringList;
+  data: TNNDynArray;}
+begin
+  {nn := TNeuralNetwork.Create;
+
+  fc := TNNFullyConnectedLayer.Create;
+  nn.AddLayer( fc );
+  fc.InitializationData.InitBiasesData.InitMethod := imZeros;
+  fc.InitializationData.InitWeightsData.InitMethod := imZeros;
+  fc.ActivationMethod := amLinear;
+  fc.UseBiases := false;
+  fc.InputsCount := 4;
+  fc.OutputsCount := 2;
+
+  nn.Build;
+  nn.Initialize;
+
+  SetLength( data, fc.InputsCount );
+  nn.ForwardPropagation( @data[ 0 ] );
+
+  //do_cmd( pyPath + 'fc0001.cmd data1 12345 fghd-klskl-234' ); }
+end;
+
+function TMainForm.DiffFloat(AValue1, AValue2: NNFloat;
+  var AStrRes: String): boolean;
+const
+  EPSILON: NNFloat = 1E-7; // допустимая погрешность
+var
+  _diff: NNFloat;
+begin
+  if AValue1 = AValue2 then begin
+    Result := true;
+    AStrRes := 'OK';
+    exit;
+  end;
+
+  _diff := Abs( AValue1 - AValue2 );
+
+  if _diff < EPSILON then begin
+    Result := true;
+    AStrRes := FloatToStr( _diff ) + ' EPSILON';
+    exit;
+  end;
+
+  Result := false;
+  AStrRes := FloatToStr( _diff );
+end;
+
+function TMainForm.do_cmd(const ACmd: String): cardinal;
+var
+  s: String;
+begin
+  //Log( 'do_cmd', '-----------------------------------------------' );
+  //Log( 'do_cmd', ACmd );
+  //Log( 'do_cmd', '----' );
+
+
+  s := ACmd;
+  KRRunInThread( @s, do_cmd_thread );
+
+  mainLogger.Log( s );
+end;
+
+function TMainForm.do_cmd_thread(AThread: TThread; AData: Pointer): Pointer;
+var
+  cmdLine: String;
+  hOutStdR, hOutStdW, hOutStdW0: THANDLE;
+  si: TSTARTUPINFO;
+  pi: TPROCESSINFORMATION;
+  res: uint32;
+  BytesRes: Cardinal;
+  _buf: array[ 0..2048 ] of byte;
+  ErrorLevel: Cardinal;
+  str: PString;
+begin
+  hOutStdR:=INVALID_HANDLE_VALUE;
+  hOutStdW:=INVALID_HANDLE_VALUE;
+  str := PString( AData );
+  cmdLine := str^;
+  cmdLine := cmdLine + #0;
+  str^ := '';
+
+  hOutStdW0 := CreateNamedPipe( '\\.\pipe\sdttmp',
+    PIPE_ACCESS_DUPLEX,
+    0,
+    PIPE_UNLIMITED_INSTANCES,
+    2048,
+    2048,
+    2000,
+    nil );
+  hOutStdR := CreateFile( '\\.\pipe\sdttmp',
+    FILE_WRITE_DATA or FILE_READ_DATA,
+    0,
+    nil,
+    OPEN_EXISTING,
+    0,
+    0 );
+  DuplicateHandle( GetCurrentProcess(), hOutStdW0, GetCurrentProcess(), @hOutStdW, 0, TRUE, DUPLICATE_SAME_ACCESS );
+  CloseHandle( hOutStdW0 );
+  hOutStdW0 := INVALID_HANDLE_VALUE;
+
+  ZeroMemory(@si, SizeOf(si));
+  ZeroMemory(@pi, SizeOf(pi));
+  si.cb := SizeOf(si);
+  si.dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+  si.wShowWindow := SW_HIDE;
+  si.hStdOutput := hOutStdW;
+  si.hStdError := hOutStdW;
+
+  if CreateProcess(nil, PChar(cmdLine), nil, nil, true, 0, nil, nil, si, pi) then begin
+
+    CloseHandle( hOutStdW );
+    hOutStdW := INVALID_HANDLE_VALUE;
+
+    while True do begin
+      AThread.Sleep( 25 );
+      while ReadFile( hOutStdR, _buf, 2048, BytesRes, nil ) and ( BytesRes > 0 ) do begin
+        _buf[ BytesRes ] := 0;
+        str^ := str^ + PAnsiChar( @_buf[ 0 ] );
+        AThread.Sleep( 25 );
+      end;
+      if ( not GetExitCodeProcess( pi.hProcess, ErrorLevel ) ) or ( ErrorLevel <> STILL_ACTIVE ) then begin
+        if ReadFile( hOutStdR, _buf, 2048, BytesRes, nil ) and ( BytesRes > 0 ) then begin
+          _buf[ BytesRes ] := 0;
+          str^ := str^ + PAnsiChar( @_buf[ 0 ] );
+        end;
+        break;
+      end;
+    end;
+
+    CloseHandle( pi.hThread );
+    pi.hThread := INVALID_HANDLE_VALUE;
+    CloseHandle( pi.hProcess );
+    pi.hProcess := INVALID_HANDLE_VALUE;
+  end;
+end;
+
+procedure TMainForm.FCLayerParamsUpdate;
+var
+  s: String;
+begin
+  if lbFCLayersList.ItemIndex = -1 then begin
+    btnFCDelLayer.Enabled := false;
+    cbFCActivation.Enabled := false;
+    veFCOutputsCount.Enabled := false;
+    chFCUseBiases.Enabled := false;
+    cbFCInitWeights.Enabled := false;
+    cbFCInitBiases.Enabled := false;
+    exit;
+  end;
+
+  s := FC_LAYERS_SECTION + KRUInt32ToStr( lbFCLayersList.ItemIndex );
+
+  cfgFCActivation.Section := s;
+  cbFCActivation.Enabled := True;
+
+  cfgFCOutputsCount.Section := s;
+  veFCOutputsCount.Enabled := True;
+
+  cfgFCUseBiases.Section := s;
+  chFCUseBiases.Enabled := True;
+
+  cfgFCInitWeights.Section := s;
+  cbFCInitWeights.Enabled := True;
+
+  cfgFCInitBiases.Section := s;
+  cbFCInitBiases.Enabled := True;
+
+  btnFCDelLayer.Enabled := True;
+end;
+
+procedure TMainForm.FCLayersUpdate;
+var
+  i, n: int32;
+  s: String;
+begin
+  n := cfgFCLayersCount.Value;
+  lbFCLayersList.Items.BeginUpdate;
+  lbFCLayersList.Items.Clear;
+  for I := 0 to n - 1 do begin
+    s := FC_LAYERS_SECTION + KRUInt32ToStr( i );
+    lbFCLayersList.Items.Add(
+      TNNActivationMethod_str[ TNNActivationMethod( KRIniConfig1.ReadInteger( s, cfgFCActivation.Name, cfgFCActivation.DefaultVar ) ) ] +
+      ' ' + KRInt32ToStr( KRIniConfig1.ReadInteger( s, cfgFCOutputsCount.Name, cfgFCOutputsCount.DefaultVar ) ) +
+      _is( KRIniConfig1.ReadBool( s, cfgFCUseBiases.Name, cfgFCUseBiases.DefaultVar ), ' Biases', '' )
+    );
+  end;
+  lbFCLayersList.Items.EndUpdate;
+  if n > 0 then lbFCLayersList.ItemIndex := 0;
+
+  FCLayerParamsUpdate;
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+  i: int32;
+  s: String;
+begin
+  appPath := ExtractFilePath( Application.ExeName );
+  s := KRExtractFileName( Application.ExeName );
+  s := Copy( s, 1, Length( s ) - 4 );
+  Caption := s;
+  KRIniConfig1.FileName := s + '.ini';
+
+  s := ExtractFilePath( copy( appPath, 1, Length( appPath ) - 1 ) );
+  s := ExtractFilePath( copy( s, 1, Length( s ) - 1 ) );
+  s := ExtractFilePath( copy( s, 1, Length( s ) - 1 ) ) + 'cfg';
+  CreateDirectory( PChar( s ), nil );
+  KRIniConfig1.AppDataPath := false;
+  KRIniConfig1.ApplicationPath := false;
+  KRIniConfig1.FileName := s + '\' + ExtractFileName( KRIniConfig1.FileName );
+
+  pyPath := ExtractFilePath( Copy( appPath, 1, Length( appPath ) - 1 ) );
+  pyPath := ExtractFilePath( Copy( pyPath, 1, Length( pyPath ) - 1 ) );
+  pyPath := ExtractFilePath( Copy( pyPath, 1, Length( pyPath ) - 1 ) ) + 'py\';
+
+  dataPath := ExtractFilePath( Copy( appPath, 1, Length( appPath ) - 1 ) );
+  dataPath := ExtractFilePath( Copy( dataPath, 1, Length( dataPath ) - 1 ) );
+  dataPath := ExtractFilePath( Copy( dataPath, 1, Length( dataPath ) - 1 ) ) + 'data\';
+
+  s := appPath + 'logs';
+  CreateDirectory( PChar( s ), nil );
+  s := s + '\' + FormatDateTime( 'yyyymmdd', now );
+  CreateDirectory( PChar( s ), nil );
+  s := s + '\' + FormatDateTime( 'hhnnss.zzz', now );
+  CreateDirectory( PChar( s ), nil );
+
+  logPref := '[' + AnsiString( ClassName ) + '.';
+  mainLogger := TKRLoggerA.Create( nil, false );
+  mainLogger.LogFile := s + '\main.log';
+  mainLogger.OnLog := LogEvent;
+  mainLogger.UseInc;
+
+  cbLossesType.Items.BeginUpdate;
+  cbFCLossFunc.Items.BeginUpdate;
+  for I := int32( Low( TNNLosses ) ) to int32( High( TNNLosses ) ) do begin
+    cbLossesType.Items.Add( TNNLosses_str[ TNNLosses( i ) ] );
+    cbFCLossFunc.Items.Add( TNNLosses_str[ TNNLosses( i ) ] );
+  end;
+  cbLossesType.Items.EndUpdate;
+  cbLossesType.CfgParam := cfgLossesType;
+  cbFCLossFunc.Items.EndUpdate;
+  cbFCLossFunc.CfgParam := cfgLossesType;
+
+  cbFCActivation.Items.BeginUpdate;
+  for I := int32( Low( TNNActivationMethod ) ) to int32( High( TNNActivationMethod ) ) do begin
+    //if TNNActivationMethod( i ) in TNNFullyConnectedLayer.ActivationMethods then
+      cbFCActivation.Items.AddObject( TNNActivationMethod_str[ TNNActivationMethod( i ) ], Pointer( i ) );
+  end;
+  cbFCActivation.Items.EndUpdate;
+  cbFCActivation.CfgParam := cfgFCActivation;
+
+  cbFCInitWeights.Items.BeginUpdate;
+  cbFCInitBiases.Items.BeginUpdate;
+  for I := int32( Low( TNNInitMethod ) ) to int32( High( TNNInitMethod ) ) do begin
+    cbFCInitWeights.Items.AddObject( TNNInitMethod_str[ TNNInitMethod( i ) ], Pointer( i ) );
+    cbFCInitBiases.Items.AddObject( TNNInitMethod_str[ TNNInitMethod( i ) ], Pointer( i ) );
+  end;
+  cbFCInitWeights.Items.EndUpdate;
+  cbFCInitWeights.CfgParam := cfgFCInitWeights;
+  cbFCInitBiases.Items.EndUpdate;
+  cbFCInitBiases.CfgParam := cfgFCInitBiases;
+
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+  destroing := true;
+  mainLogger.Free;
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  FCLayersUpdate;
+end;
+
+procedure TMainForm.lbFCLayersListClick(Sender: TObject);
+begin
+  FCLayerParamsUpdate;
+end;
+
+function TMainForm.LoadFloatArrayFromFile(const AFileName: TFileName; ACount: int32;
+  var AArray: TNNDynArray): boolean;
+var
+  fs: TFileStream;
+  n: int32;
+begin
+  fs := TFileStream.Create( AFileName, fmOpenRead );
+  try
+    SetLength( AArray, ACount );
+    fs.Position := 0;
+    n := SizeOf( NNFloat ) * ACount;
+    Result := ( fs.Read( AArray[ 0 ], n ) = n );
+  finally
+    fs.Free;
+  end;
+end;
+
+function TMainForm.LoadFloatValueFromFile(const AFileName: TFileName): NNFloat;
+var
+  fs: TFileStream;
+begin
+  fs := TFileStream.Create( AFileName, fmOpenRead );
+  try
+    fs.Position := 0;
+    fs.Read( Result, SizeOf( NNFloat ) );
+  finally
+    fs.Free;
+  end;
+end;
+
+procedure TMainForm.Log(const AMethod, AText: AnsiString);
+begin
+  mainLogger.Log( logPref + AMethod + '] ' + AText );
+end;
+
+procedure TMainForm.LogErr(const AMethod, AText: AnsiString);
+begin
+  mainLogger.Log( logPref + AMethod + '] ERROR: ' + AText, ltError );
+end;
+
+procedure TMainForm.LogEvent(ASender: TObject; const ATime: TSystemTime;
+  const AText: AnsiString; ALogType: TKRLogType);
+begin
+  if destroing then exit;
+  SendMessage( MainForm.Handle, WM_LOG, NativeInt( @AText ), NativeInt( ALogType ) );
+end;
+
+function TMainForm.PrintArray(AArray: PNNFloat; ACount: int32): String;
+var
+  i: int32;
+  fs: TFormatSettings;
+begin
+  Result := '';
+  fs.DecimalSeparator := '.';
+  for I := 0 to ACount - 1 do begin
+    Result := Result + FormatFloat( '0.########', AArray^, fs ) + ',';
+    inc( AArray );
+  end;
+  Result := '[' + Copy( Result, 1, Length( Result ) - 1 ) + ']';
+end;
+
+function TMainForm.PrintDynArray(var AArray: TNNDynArray): String;
+var
+  i: int32;
+  fs: TFormatSettings;
+begin
+  Result := '';
+  fs.DecimalSeparator := '.';
+  for I := 0 to Length( AArray ) - 1 do
+    Result := Result + FormatFloat( '0.########', AArray[ i ], fs ) + ',';
+  Result := '[' + Copy( Result, 1, Length( Result ) - 1 ) + ']';
+end;
+
+procedure TMainForm.SaveFloatArrayToFile( const AFileName: TFileName;
+  AData: PNNFloat; ACount: int32 );
+var
+  fs: TFileStream;
+begin
+  fs := TFileStream.Create( AFileName, fmCreate );
+  try
+    fs.Write( AData^, SizeOf( NNFloat ) * ACount );
+  finally
+    fs.Free;
+  end;
+end;
+
+procedure TMainForm.WMLog(var AMsg: TMessage);
+begin
+  if TKRLogType( AMsg.LParam ) = ltError then reLogs.SelAttributes.Color := clRed
+  else if TKRLogType( AMsg.LParam ) = ltInfo then reLogs.SelAttributes.Color := clGreen
+  else reLogs.SelAttributes.Color := clNavy;
+  reLogs.Lines.Add( PAnsiString( AMsg.WParam )^ );
+end;
+
+end.

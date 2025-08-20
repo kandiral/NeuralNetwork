@@ -1,0 +1,19 @@
+[TMainForm.LossesTest] =======================================================
+[TMainForm.LossesTest] FuncName=MSLE
+[TMainForm.LossesTest] yTrue=[-0,26158195,0,06978135,0,66365112,-0,56520233,-0,46758208]
+[TMainForm.LossesTest] yPred=[-0,68107789,0,96686895,0,93465973,-0,00754915,0,309901]
+[TMainForm.LossesTest] Loss=0,51802495
+[TMainForm.LossesTest] grad=[-1,05300099,0,12384936,0,03120276,0,33262975,0,27491485]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MSLE
+Loss= 0.09330337
+grads: [0.         0.12384937 0.03120276 0.         0.08243415]
+
+[TMainForm.LossesTest] ERROR: == LossValueDiff: 0,424721581168706
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] ERROR: = Grad[0]: 1,05300099209498
+[TMainForm.LossesTest] = Grad[1]: 1,3793747019597E-8 EPSILON
+[TMainForm.LossesTest] = Grad[2]: 4,68869446740294E-9 EPSILON
+[TMainForm.LossesTest] ERROR: = Grad[3]: 0,332629751049286
+[TMainForm.LossesTest] ERROR: = Grad[4]: 0,192480701344049

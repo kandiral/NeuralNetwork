@@ -1,0 +1,5 @@
+[TMainForm.LossesTest] _pth=X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_132156\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]

@@ -1,0 +1,13 @@
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc0001.cmd data1 12345 fghd-klskl-234
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc0001.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\fc0001.py', 'data1', '12345', 'fghd-klskl-234']
+ 
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc0001.py", line 18, in <module>
+    with open( cfg_file, "r", encoding = "utf-8" ) as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 22] Invalid argument: '\\\\127.0.0.1\\E$\\WS\\GD\\Delphi\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\data\\12345\\cfg.json\\'
+

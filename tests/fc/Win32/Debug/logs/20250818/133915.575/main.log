@@ -1,0 +1,12 @@
+[TMainForm.FCTest] =======================================================
+[TMainForm.FCTest] XData=[1.76405236,0.4001572,0.97873795,2.24089327,1.86755797]
+[TMainForm.FCTest] YData=[18.22722104,-9.16421802]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+xdata: [[1.76405236 0.4001572  0.97873795 2.24089327 1.86755797]]
+ydata: [[ 7.28391958 -5.10389879]]
+
+[TMainForm.FCTest] == YDataDiff: 
+[TMainForm.FCTest] ERROR: = YData[0]: 10,9433014517179
+[TMainForm.FCTest] ERROR: = YData[1]: 4,06031922699785

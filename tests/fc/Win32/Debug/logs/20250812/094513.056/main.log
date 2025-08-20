@@ -1,0 +1,19 @@
+[TMainForm.LossesTest] FuncName=MAPE
+[TMainForm.LossesTest] yTrue=[0,0,0,81158387,-0,74602638,0,2647185]
+[TMainForm.LossesTest] yPred=[0,0,62944738,0,0,82675171,-0,8049192]
+[TMainForm.LossesTest] Loss=1258894769,16816425
+[TMainForm.LossesTest] grad=[0,2000000000,-0,24643171,0,26808704,-0,75551954]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MAPE
+Loss= 125889624.0
+grads: [-0.00000000e+00  2.00000000e+08 -2.46431713e+01  2.68087025e+01
+ -7.55519562e+01]
+
+[TMainForm.LossesTest] ERROR: == LossValueDiff: 1133005145,16816
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: OK
+[TMainForm.LossesTest] ERROR: = Grad[1]: 1800000000
+[TMainForm.LossesTest] ERROR: = Grad[2]: 24,3967396011045
+[TMainForm.LossesTest] ERROR: = Grad[3]: 26,5406154326965
+[TMainForm.LossesTest] ERROR: = Grad[4]: 74,7964366346129

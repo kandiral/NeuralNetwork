@@ -1,0 +1,33 @@
+[TMainForm.LossesTest] _pth=20250812\losses_MSE_080716\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,26471850,-0,44300356,0,91501366,-0,68477385,0,91433390,0,60056095,-0,15647743,0,58441465]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,80491920,0,09376304,0,92977707,0,94118556,-0,02924870,-0,71622731,0,83147105,0,91898485]
+[TMainForm.LossesTest] Loss=1,02952686
+[TMainForm.LossesTest] grad=[0,03642730,0,31455562,-0,21392754,0,10735332,0,00295268,0,32519188,-0,18871652,-0,26335765,0,19758970,0,06691404]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250812\losses_MSE_080716\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250812\\losses_MSE_080716\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_080716\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250812\losses_MSE_080716\cfg.json
+---- MSE
+Loss= 1.0295268
+grads:
+[ 0.0364273   0.31455562 -0.21392754  0.10735332  0.00295268  0.32519189
+ -0.18871652 -0.26335764  0.19758968  0.06691404]
+
+[TMainForm.LossesTest] == LossValueDiff: EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: EPSILON
+[TMainForm.LossesTest] = Grad[1]: EPSILON
+[TMainForm.LossesTest] = Grad[2]: EPSILON
+[TMainForm.LossesTest] = Grad[3]: EPSILON
+[TMainForm.LossesTest] = Grad[4]: EPSILON
+[TMainForm.LossesTest] = Grad[5]: EPSILON
+[TMainForm.LossesTest] = Grad[6]: EPSILON
+[TMainForm.LossesTest] = Grad[7]: EPSILON
+[TMainForm.LossesTest] = Grad[8]: EPSILON
+[TMainForm.LossesTest] = Grad[9]: EPSILON

@@ -1,0 +1,97 @@
+unit RandGen;
+
+interface
+
+type
+  TRandGen = class
+  public
+    procedure Init; virtual; abstract;
+    function Next32: Uint32; virtual; abstract;
+    function Next64: Uint64; virtual; abstract;
+  end;
+
+  TRandGenFloat<FloatType> = class( TRandGen )
+  private
+    FRandGen: TRandGen;
+  public
+    destructor Destroy; override;
+    property Generator: TRandGen read FRandGen;
+    procedure Init; inline;
+    function Next32: Uint32; inline;
+    function Next64: Uint64; inline;
+    function NextFloat: FloatType; virtual; abstract;
+  end;
+
+  TRandGenSingle = class( TRandGenFloat<Single> )
+  public
+    function NextFloat: Single; inline;
+  end;
+
+  TRandGenDouble = class( TRandGenFloat<Double> )
+  public
+    function NextFloat: Double; inline;
+  end;
+
+  TRandGenExtended = class( TRandGenFloat<Extended> )
+  public
+    function NextFloat: Extended; inline;
+  end;
+
+implementation
+
+{ TRandGenFloat }
+
+destructor TRandGenFloat<FloatType>.Destroy;
+begin
+  FRandGen.Free;
+  inherited;
+end;
+
+procedure TRandGenFloat<FloatType>.Init;
+begin
+  FRandGen.Init;
+end;
+
+function TRandGenFloat<FloatType>.Next32: Uint32;
+begin
+  Result := FRandGen.Next32;
+end;
+
+function TRandGenFloat<FloatType>.Next64: Uint64;
+begin
+  Result := FRandGen.Next64;
+end;
+
+{ TRandGenSingle }
+
+function TRandGenSingle.NextFloat: Single;
+var
+  r: UInt32;
+begin
+  r := ( Next32 shr 9 ) or $3F800000;
+  Result := PSingle( @r )^ - 1.0;
+end;
+
+{ TRandGenDouble }
+
+function TRandGenDouble.NextFloat: Double;
+var
+  r: UInt64;
+begin
+  r := ( Next64 shl 20 ) or $3FF0000000000000;
+  Result := PDouble(@r)^ - 1.0;
+end;
+
+{ TRandGenExtended }
+
+function TRandGenExtended.NextFloat: Extended;
+var
+  r: UInt64;
+  w: UInt16;
+begin
+  w := $3fff;
+  r := ( Next64 shl 1 ) or $8000000000000000;
+  Result := PExtended(@r)^ - 1.0;
+end;
+
+end.

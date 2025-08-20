@@ -1,0 +1,55 @@
+[TMainForm.LossesTest] FuncName=MAE
+[TMainForm.LossesTest] yTrue=[0,0,0,81158387,-0,74602638,0,2647185]
+[TMainForm.LossesTest] yPred=[0,0,62944738,0,0,82675171,-0,8049192]
+[TMainForm.LossesTest] Loss=0,81668941
+[TMainForm.LossesTest] grad=[0,0,2,-0,2,0,2,-0,2]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MAE
+Loss= 0.8166894
+grads: [-0.   0.2 -0.2  0.2 -0.2]
+
+[TMainForm.LossesTest] == LossValueDiff: 3,52024656091743E-8 EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: OK
+[TMainForm.LossesTest] = Grad[1]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[2]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[3]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[4]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,0,0,81158387,-0,74602638,0,2647185]
+[TMainForm.LossesTest] yPred=[0,0,62944738,0,0,82675171,-0,8049192]
+[TMainForm.LossesTest] Loss=0,93452562
+[TMainForm.LossesTest] grad=[0,0,25177895,-0,32463355,0,62911123,-0,42785508]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MSE
+Loss= 0.93452567
+grads: [-0.          0.25177896 -0.32463357  0.62911123 -0.42785507]
+
+[TMainForm.LossesTest] == LossValueDiff: 4,89140598025628E-8 EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: OK
+[TMainForm.LossesTest] = Grad[1]: 6,68028815598021E-9 EPSILON
+[TMainForm.LossesTest] = Grad[2]: 2,10786224030812E-8 EPSILON
+[TMainForm.LossesTest] = Grad[3]: 4,51731785311438E-9 EPSILON
+[TMainForm.LossesTest] = Grad[4]: 4,23955659467623E-9 EPSILON
+[TMainForm.LossesTest] FuncName=MAPE
+[TMainForm.LossesTest] yTrue=[0,0,0,81158387,-0,74602638,0,2647185]
+[TMainForm.LossesTest] yPred=[0,0,62944738,0,0,82675171,-0,8049192]
+[TMainForm.LossesTest] Loss=125889476916,816422
+[TMainForm.LossesTest] grad=[0,2000000000,-0,24643171,0,26808704,-0,75551954]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MAPE
+Loss= 125889624.0
+grads: [-0.00000000e+00  2.00000000e+08 -2.46431713e+01  2.68087025e+01
+ -7.55519562e+01]
+
+[TMainForm.LossesTest] ERROR: == LossValueDiff: 125763587292,816
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: OK
+[TMainForm.LossesTest] ERROR: = Grad[1]: 1800000000
+[TMainForm.LossesTest] ERROR: = Grad[2]: 24,3967396011045
+[TMainForm.LossesTest] ERROR: = Grad[3]: 26,5406154326965
+[TMainForm.LossesTest] ERROR: = Grad[4]: 74,7964366346129

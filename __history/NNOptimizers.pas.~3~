@@ -1,0 +1,66 @@
+unit NNOptimizers;
+
+interface
+
+{$I NNConfig.inc}
+
+uses
+  WinAPI.Windows,
+  System.Types, System.Classes, System.SysUtils, System.Math,
+  NNCommon, NeuralNetwork;
+
+type
+  TNNSGD = class( TNNOptimizer )
+  public
+    constructor Create; override;
+    procedure UpdateParameters(AWeights, ABiases, AWeightGrads, ABiasGrads: PNNFloat;
+                              AWeightCount, ABiasCount: int32); override;
+  end;
+
+  TNNAdam = class(TNNOptimizer)
+  private
+    FWeightsM, FWeightsV: PNNFloat; // Моменты для весов
+    FBiasesM, FBiasesV: PNNFloat;   // Моменты для смещений
+    FWeightCount, FBiasCount: int32; // Размеры массивов
+    FT: int32;                      // Счётчик шагов
+    FBeta1, FBeta2, FEpsilon: NNFloat; // Гиперпараметры
+  public
+    constructor Create; override;
+    procedure UpdateParameters(AWeights, ABiases, AWeightGrads, ABiasGrads: PNNFloat;
+                              AWeightCount, ABiasCount: int32); override;
+  end;
+
+const
+  TNNOptimizerClassList : array[ TNNOptimizerType ] of TNNLossesClass = (
+    TNNSGD, TNNAdam
+  );
+
+
+implementation
+
+{ TNNSGD }
+
+constructor TNNSGD.Create;
+begin
+  inherited Create( otSGD, 0.1 );
+end;
+
+procedure TNNSGD.UpdateParameters(AWeights, ABiases, AWeightGrads,
+  ABiasGrads: PNNFloat; AWeightCount, ABiasCount: int32);
+var
+  i: int32;
+begin
+  for i := 0 to AWeightCount - 1 do begin
+    AWeights^ := AWeights^ - FLearningRate * AWeightGrads^;
+    Inc(AWeights);
+    Inc(AWeightGrads);
+  end;
+
+  for i := 0 to ABiasCount - 1 do begin
+    ABiases^ := ABiases^ - FLearningRate * ABiasGrads^;
+    Inc(ABiases);
+    Inc(ABiasGrads);
+  end;
+end;
+
+end.

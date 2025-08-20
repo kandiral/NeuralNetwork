@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.829,=X:\Projects\KR\Test\NeuralNetwork\nn\random\test\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.955,X:\Projects\KR\Test\NeuralNetwork\nn\random\source\RandGen.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.870,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Project1.dproj=X:\Projects\KR\Test\NeuralNetwork\nn\random\test\RandomTester.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.321,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.dfm=X:\Projects\KR\Test\NeuralNetwork\nn\random\test\MainUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.063,=X:\Projects\KR\Test\NeuralNetwork\nn\random\test\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.321,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\random\test\MainUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.759,=C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.157,X:\Projects\KR\Test\NeuralNetwork\nn\random\test\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\random\source\RandGen.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.172,X:\Projects\KR\Test\NeuralNetwork\nn\random\test\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\random\source\mt19937.pas</Transaction>
+  </Transactions>
+</BorlandProject>

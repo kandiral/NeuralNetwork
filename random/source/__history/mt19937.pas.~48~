@@ -1,0 +1,215 @@
+unit mt19937;
+
+(*
+https://github.com/numpy/numpy/tree/v1.26.4/numpy/random/src/mt19937
+https://wiki.freepascal.org/A_simple_implementation_of_the_Mersenne_twister
+*)
+
+interface
+
+uses
+  System.SysUtils,
+  System.Math;
+
+const
+  RK_STATE_LEN = 624;
+  MATRIX_A = UInt32($9908b0df);
+  UPPER_MASK = UInt32($80000000);
+  LOWER_MASK = UInt32($7fffffff);
+
+type
+  TMT19937_state = record
+    key: array[ 0 .. RK_STATE_LEN - 1 ] of UInt32;
+    pos: UInt32;
+  end;
+
+  TMT19937 = class
+  private
+    FState: TMT19937_state;
+    FSeed: UInt32;
+    FGaussSingle: Single;
+    procedure Gen; inline;
+  public
+    constructor Create;
+    property Seed: UInt32 read FSeed write FSeed;
+    procedure Init; inline;
+    function Next32: Uint32; inline;
+    function Next64: Uint64; inline;
+    function NextSingle: Single; inline;
+    function NextDouble: Double; inline;
+    function NextExtended: Extended; inline;
+    function UniformSingle: Single; overload; inline;
+    function UniformSingle( _mu, _sigma: Single ): Single;  overload; inline;
+    function NormalBoxMullerSingle: Single; overload; inline;
+    function NormalBoxMullerSingle( _mu, _sigma: Single ): Single; overload; inline;
+    function NormalGaussSingle: Single; overload; inline;
+    function NormalGaussSingle( _mu, _sigma: Single ): Single; overload; inline;
+  end;
+
+implementation
+
+const
+  N = 624;
+  M = 397;
+
+{ TMT19937 }
+
+constructor TMT19937.Create;
+begin
+  FGaussSingle := nan;
+  FGaussSingle.IsNan
+end;
+
+procedure TMT19937.Gen;
+var
+  i, y: uint32;
+begin
+  i := 0;
+  while i < N - M do begin
+    y := ( FState.key[ i ] and UPPER_MASK ) or ( FState.key[ i + 1 ] and LOWER_MASK );
+    FState.key[ i ] := FState.key[ i + M ] xor ( y shr 1 ) xor ( -( y and 1 ) and MATRIX_A );
+    inc( i );
+  end;
+  while i < N - 1 do begin
+    y := ( FState.key[ i ] and UPPER_MASK ) or ( FState.key[ i + 1 ] and LOWER_MASK );
+    FState.key[ i ] := FState.key[ i + ( M - N ) ] xor ( y shr 1 ) xor ( -( y and 1 ) and MATRIX_A );
+    inc( i );
+  end;
+  y := ( FState.key[ N - 1 ] and UPPER_MASK ) or ( FState.key[ 0 ] and LOWER_MASK );
+  FState.key[ N - 1 ] := FState.key[ M - 1 ] xor ( y shr 1 ) xor ( -( y and 1 ) and MATRIX_A );
+
+  FState.pos := 0;
+end;
+
+procedure TMT19937.Init;
+var
+  pos, val: uint32;
+begin
+  val := FSeed;
+  for pos := 0 to RK_STATE_LEN - 1 do begin
+    FState.key[ pos ] := val;
+    val := UInt32( 1812433253 ) * ( val xor ( val shr 30 ) ) + pos + UInt32( 1 );
+  end;
+  FState.pos := RK_STATE_LEN;
+end;
+
+function TMT19937.Next32: UInt32;
+begin
+  if FState.pos = RK_STATE_LEN then begin
+    // Move to function to help inlining
+    Gen;
+  end;
+  Result := FState.key[ FState.pos ];
+  inc( FState.pos );
+
+  Result := Result xor ( Result shr 11 );
+  Result := Result xor ( Result shl 7 ) and UInt32($9d2c5680);
+  Result := Result xor ( Result shl 15 ) and UInt32($efc60000);
+  Result := Result xor ( Result shr 18 );
+end;
+
+function TMT19937.Next64: Uint64;
+begin
+  Result := ( UInt64( Next32 ) shl 32 ) or Next32;
+end;
+
+function TMT19937.NextDouble: Double;
+begin
+  PUInt64( @Result )^ := ( Next64 shr 12 ) or UInt64($3FF0000000000000);
+  Result := Result - 1.0;
+end;
+
+function TMT19937.NextExtended: Extended;
+{$IF SizeOf(Extended) = 8}
+begin
+  PUInt64( @Result )^ := ( Next64 shr 12 ) or UInt64($3FF0000000000000);
+  Result := Result - 1.0;
+end;
+{$ELSEIF SizeOf(Extended) = 10}
+begin
+  PWord( NativeUInt( @Result ) + 8 )^ := $3fff;
+  PUInt64( @Result )^ := ( Next64 shr 1 ) or UInt64($8000000000000000);
+  Result := Result - 1.0;
+end;
+{$ENDIF}
+
+function TMT19937.NextSingle: Single;
+begin
+  PCardinal( @Result )^ := ( Next32 shr 9 ) or UInt32($3F800000);
+  Result := Result - 1;
+end;
+
+function TMT19937.UniformSingle: Single;
+begin
+  Result := 2 * NextSingle - 1;
+end;
+
+function TMT19937.UniformSingle( _mu, _sigma: Single ): Single;
+begin
+  Result := _sigma * NextSingle + _mu;
+end;
+
+function TMT19937.NormalBoxMullerSingle: Single;
+var
+  u1, u2, z: Single;
+begin
+  u1 := NextSingle;
+  u2 := NextSingle;
+  z := Sqrt(-2 * Ln(u1)) * Cos(2 * Pi * u2);
+  Result := 2 * z - 1;
+end;
+
+function TMT19937.NormalBoxMullerSingle( _mu, _sigma: Single ): Single;
+var
+  u1, u2, z: Single;
+begin
+  u1 := NextSingle;
+  u2 := NextSingle;
+  z := Sqrt(-2 * Ln(u1)) * Cos(2 * Pi * u2);
+  Result := _sigma * z + _mu;
+end;
+
+function TMT19937.NormalGaussSingle: Single;
+var
+  f, x1, x2, r2: Single;
+begin
+  if not FGaussSingle.IsNan then begin
+    Result := FGaussSingle;
+    FGaussSingle := nan;
+    exit;
+  end;
+  repeat
+    x1 := 2 * NextSingle - 1;
+    x2 := 2 * NextSingle - 1;
+    r2 := x1 * x1 + x2 * x2;
+  until ( r2 < 1.0 ) and ( r2 <> 0 );
+
+  // Polar method, a more efficient version of the Box-Muller approach.
+  f := sqrt(-2.0 * ln(r2) / r2);
+  FGaussSingle := f * x1;
+  Result := f * x2;
+end;
+
+function TMT19937.NormalGaussSingle( _mu, _sigma: Single ): Single;
+var
+  f, x1, x2, r2: Single;
+begin
+  if not FGaussSingle.IsNan then begin
+    Result := FGaussSingle;
+    FGaussSingle := nan;
+    exit;
+  end;
+  repeat
+    x1 := _sigma * NextSingle + _mu;
+    x2 := _sigma * NextSingle + _mu;
+    r2 := x1 * x1 + x2 * x2;
+  until ( r2 < 1.0 ) and ( r2 <> 0 );
+
+  // Polar method, a more efficient version of the Box-Muller approach.
+  f := sqrt(-2.0 * ln(r2) / r2);
+  FGaussSingle := f * x1;
+  Result := f * x2;
+end;
+
+
+end.

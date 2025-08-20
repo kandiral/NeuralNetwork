@@ -1,0 +1,329 @@
+unit NNLosses;
+
+(*
+ keras/src/losses/losses.py
+*)
+
+interface
+
+{$I NNConfig.inc}
+
+uses
+  WinAPI.Windows,
+  System.Types, System.Classes, System.SysUtils, System.Math,
+  NNCommon, NeuralNetwork;
+
+type
+  TNNMeanSquaredError = class( TNNLossFunction )
+  public
+    constructor Create; override;
+    function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; override;
+    procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); override;
+  end;
+
+  TNNMeanAbsoluteError = class( TNNLossFunction )
+  public
+    constructor Create; override;
+    function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; override;
+    procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); override;
+  end;
+
+  TNNMeanAbsolutePercentageError = class( TNNLossFunction )
+  public
+    constructor Create; override;
+    function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; override;
+    procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); override;
+  end;
+
+  TNNMeanSquaredLogarithmicError = class( TNNLossFunction )
+  public
+    constructor Create; override;
+    function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; override;
+    procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); override;
+  end;
+
+  TNNCosineSimilarity = class( TNNLossFunction )
+  private
+    FDotProduct, FNormTrue, FNormPred: NNFloat;
+    FNormTrueNormPred, FNormPredCubed: NNFloat;
+  public
+    constructor Create; override;
+    function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; override;
+    procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); override;
+  end;
+
+const
+  TNNLossesClassList : array[ TNNLosses ] of TNNLossesClass = (
+    TNNMeanSquaredError, TNNMeanAbsoluteError, TNNMeanAbsolutePercentageError, TNNMeanSquaredLogarithmicError,
+    TNNCosineSimilarity
+  );
+
+implementation
+
+const
+  EPSILON : NNFLoat = 1e-10; // малое число для предотвращения деления на ноль
+
+{ TNNMeanSquaredError }
+
+procedure TNNMeanSquaredError.BackwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32; AGradients: PNNFloat );
+var
+  i: int32;
+begin
+  AGradients^ := ( AYPred^ - AYTrue^ ) * 2 / ACount;
+  for I := 2 to ACount do begin
+    inc( AYTrue );
+    inc( AYPred );
+    inc( AGradients );
+    AGradients^ := ( AYPred^ - AYTrue^ ) * 2 / ACount;
+  end;
+end;
+
+constructor TNNMeanSquaredError.Create;
+begin
+  inherited Create( lfMSE );
+end;
+
+function TNNMeanSquaredError.ForwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32): NNFloat;
+var
+  i: int32;
+  sum, diff: NNFloat;
+begin
+  diff := AYTrue^ - AYPred^;
+  sum := diff * diff;
+  for I := 2 to ACount do begin
+    inc( AYTrue );
+    inc( AYPred );
+    diff := AYTrue^ - AYPred^;
+    sum := sum + ( diff * diff );
+  end;
+  Result := sum / ACount;
+end;
+
+{ TNNMeanAbsoluteError }
+
+procedure TNNMeanAbsoluteError.BackwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32; AGradients: PNNFloat);
+var
+  i: int32;
+  diff: NNFloat;
+begin
+  AGradients^ := 0.0;
+  diff := AYPred^ - AYTrue^;
+  if diff > 0 then AGradients^ := 1.0 / ACount
+  else if diff < 0 then AGradients^ := -1.0 / ACount;
+  for I := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    Inc( AGradients );
+
+    AGradients^ := 0.0;
+    diff := AYPred^ - AYTrue^;
+    if diff > 0 then AGradients^ := 1.0 / ACount
+    else if diff < 0 then AGradients^ := -1.0 / ACount;
+  end;
+end;
+
+constructor TNNMeanAbsoluteError.Create;
+begin
+  inherited Create( lfMAE );
+end;
+
+function TNNMeanAbsoluteError.ForwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32): NNFloat;
+var
+  i: int32;
+  sum, diff: NNFloat;
+begin
+  diff := Abs( AYTrue^ - AYPred^ );
+  sum := diff;
+  for I := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    diff := Abs( AYTrue^ - AYPred^ );
+    sum := sum + diff;
+  end;
+  Result := sum / ACount;
+end;
+
+{ TNNMeanAbsolutePercentageError }
+
+procedure TNNMeanAbsolutePercentageError.BackwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32; AGradients: PNNFloat);
+var
+  i: int32;
+  denom, diff: NNFloat;
+begin
+  AGradients^ := 0;
+  diff := AYTrue^ - AYPred^;
+  if diff > 0 then begin
+    denom := Abs( AYTrue^ );
+    if denom <= 0 then denom := EPSILON;
+    AGradients^ := -100.0 / ( denom * ACount );
+  end else if diff < 0 then begin
+    denom := Abs( AYTrue^ );
+    if denom <= 0 then denom := EPSILON;
+    AGradients^ := 100.0 / ( denom * ACount );
+  end;
+
+  for I := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    Inc( AGradients );
+
+    AGradients^ := 0;
+    diff := AYTrue^ - AYPred^;
+    if diff > 0 then begin
+      denom := Abs( AYTrue^ );
+      if denom <= 0 then denom := EPSILON;
+      AGradients^ := -100.0 / ( denom * ACount );
+    end else if diff < 0 then begin
+      denom := Abs( AYTrue^ );
+      if denom <= 0 then denom := EPSILON;
+      AGradients^ := 100.0 / ( denom * ACount );
+    end;
+  end;
+end;
+
+constructor TNNMeanAbsolutePercentageError.Create;
+begin
+  inherited Create( lfMAPE );
+end;
+
+function TNNMeanAbsolutePercentageError.ForwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32): NNFloat;
+var
+  i: int32;
+  denom, sum: NNFloat;
+begin
+  denom := Abs( AYTrue^ );
+  if denom <= 0 then denom := EPSILON;
+  sum := Abs( AYTrue^ - AYPred^ ) / denom;
+  for I := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    denom := Abs( AYTrue^ );
+    if denom <= 0 then denom := EPSILON;
+    sum := sum + ( Abs( AYTrue^ - AYPred^ ) / denom );
+  end;
+  Result := sum * 100 / ACount;
+end;
+
+{ TNNMeanSquaredLogarithmicError }
+
+procedure TNNMeanSquaredLogarithmicError.BackwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32; AGradients: PNNFloat);
+var
+  i: int32;
+  vl1, vl2, invN2: NNFloat;
+begin
+  invN2 := 2.0 / ACount;
+  vl1 := AYPred^;
+  if vl1 <= 0 then AGradients^ := 0 else begin
+    vl2 := AYTrue^;
+    if vl2 <= 0 then vl2 := EPSILON;
+    AGradients^ := invN2 * ( LnXP1( vl1 ) - LnXP1( vl2 ) ) / ( vl1 + 1 );
+  end;
+
+  for I := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    Inc( AGradients );
+
+    vl1 := AYPred^;
+    if vl1 <= 0 then AGradients^ := 0 else begin
+      vl2 := AYTrue^;
+      if vl2 <= 0 then vl2 := EPSILON;
+      AGradients^ := invN2 * ( LnXP1( vl1 ) - LnXP1( vl2 ) ) / ( vl1 + 1 );
+    end;
+  end;
+end;
+
+constructor TNNMeanSquaredLogarithmicError.Create;
+begin
+  inherited Create( lfMSLE );
+end;
+
+function TNNMeanSquaredLogarithmicError.ForwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32): NNFloat;
+var
+  i: int32;
+  sum, vl1, vl2, diff: NNFloat;
+begin
+  vl1 := AYTrue^;
+  if vl1 <= 0 then vl1 := EPSILON;
+  vl2 := AYPred^;
+  if vl2 <= 0 then vl2 := EPSILON;
+  diff := LnXP1( vl1 ) - LnXP1( vl2 );
+  sum := diff * diff;
+  for i := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+
+    vl1 := AYTrue^;
+    if vl1 <= 0 then vl1 := EPSILON;
+    vl2 := AYPred^;
+    if vl2 <= 0 then vl2 := EPSILON;
+    diff := LnXP1( vl1 ) - LnXP1( vl2 );
+
+    sum := sum + ( diff * diff );
+  end;
+  Result := sum / ACount;
+end;
+
+{ TNNCosineSimilarity }
+
+procedure TNNCosineSimilarity.BackwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32; AGradients: PNNFloat);
+var
+  i: int32;
+begin
+  AGradients^ := ( AYPred^  * FNormPredCubed ) - ( AYTrue^ * FNormTrueNormPred );
+  for i := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+    Inc( AGradients );
+
+    AGradients^ := ( AYPred^  * FNormPredCubed ) - ( AYTrue^ * FNormTrueNormPred );
+  end;
+end;
+
+constructor TNNCosineSimilarity.Create;
+begin
+  inherited Create( lfCosineSimilarity );
+end;
+
+function TNNCosineSimilarity.ForwardPass(AYTrue, AYPred: PNNFloat;
+  ACount: int32): NNFloat;
+var
+  i: int32;
+  dotProduct, normTrue, normPred: NNFloat;
+begin
+  dotProduct := AYTrue^ * AYPred^;
+  normTrue := AYTrue^ * AYTrue^;
+  normPred := AYPred^ * AYPred^;
+
+  for i := 2 to ACount do begin
+    Inc( AYTrue );
+    Inc( AYPred );
+
+    dotProduct := dotProduct + AYTrue^ * AYPred^;
+    normTrue := normTrue + AYTrue^ * AYTrue^;
+    normPred := normPred + AYPred^ * AYPred^;
+  end;
+
+  FNormTrue := Sqrt( normTrue );
+  FNormPred := Sqrt( normPred );
+  FNormTrueNormPred := FNormTrue * FNormPred;
+  if FNormTrueNormPred = 0 then FNormTrueNormPred := EPSILON;
+  FNormTrueNormPred := 1 / FNormTrueNormPred;
+
+  FNormPredCubed := FNormTrue * FNormPred * FNormPred * FNormPred;
+  if FNormPredCubed = 0 then FNormPredCubed := EPSILON;
+  FNormPredCubed := dotProduct / FNormPredCubed;
+
+  Result := ( -dotProduct ) * FNormTrueNormPred;
+end;
+
+end.

@@ -1,0 +1,96 @@
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_134515\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_134515\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_134515\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\data\20250811\losses_MSE_134515\\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\data\20250811\losses_MSE_134515\\cfg.json
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 26, in <module>
+    with open( cfg_file, "r", encoding = "utf-8" ) as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '\\\\127.0.0.1\\E$\\WS\\GD\\Delphi\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\data\\20250811\\losses_MSE_134515\\\\cfg.json'
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_134926\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_134926\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_134926\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\pydata\20250811\losses_MSE_134926\\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\pydata\20250811\losses_MSE_134926\\cfg.json
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 26, in <module>
+    with open( cfg_file, "r", encoding = "utf-8" ) as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '\\\\127.0.0.1\\E$\\WS\\GD\\Delphi\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\pydata\\20250811\\losses_MSE_134926\\\\cfg.json'
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_135053\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_135053\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_135053\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\testsdata\20250811\losses_MSE_135053\\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\testsdata\20250811\losses_MSE_135053\\cfg.json
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 26, in <module>
+    with open( cfg_file, "r", encoding = "utf-8" ) as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '\\\\127.0.0.1\\E$\\WS\\GD\\Delphi\\Projects\\KR\\Test\\NeuralNetwork\\nn\\testsdata\\20250811\\losses_MSE_135053\\\\cfg.json'
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_135142\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_135142\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_135142\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_135142\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_135142\cfg.json
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 29, in <module>
+    if cfg.lf == 'MSE':
+       ^^^^^^
+AttributeError: 'dict' object has no attribute 'lf'
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_135520\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_135520\
+[TMainForm.do_cmd] ----
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_135520\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_135520\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_135520\cfg.json
+---- MSE
+

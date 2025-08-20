@@ -1,0 +1,35 @@
+unit NNLayer;
+
+interface
+
+uses
+  NNCommon;
+
+type
+  TNNLayer = class
+  protected
+    FOutput: PNNDynArray;
+    FInput: PNNDynArray;
+    FForwardPropagation: TNNProcess;
+    FInitialize: TNNProcess;
+    FBackwardPropagation: TNNProcess;
+    procedure EmptyProcess;
+  public
+    procedure Build; virtual; abstract;
+    property Input: PNNDynArray read FInput write FInput;
+    property Output: PNNDynArray read FOutput write FOutput;
+    property Initialize: TNNProcess read FInitialize;
+    property ForwardPropagation: TNNProcess read FForwardPropagation;
+    property BackwardPropagation: TNNProcess read FBackwardPropagation;
+  end;
+
+implementation
+
+{ TNNLayer }
+
+procedure TNNLayer.EmptyProcess;
+begin
+
+end;
+
+end.

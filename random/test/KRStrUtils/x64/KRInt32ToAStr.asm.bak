@@ -1,0 +1,107 @@
+var
+  p: NativeInt;
+  b: NativeInt;
+asm
+    push    rbx
+    push    rsi
+    push    rdi
+
+    mov     p, rcx
+    xor     rbx, rbx
+
+    cmp     edx, 0
+    jl      @Lb000
+    mov     esi, edx
+    mov     b, 0
+    jmp     @Lb000_1
+  @Lb000:
+    neg     edx
+    mov     esi, edx
+    mov     b, 1
+  @Lb000_1:
+
+    cmp     esi, $00002710
+    jb      @Lb003
+    cmp     esi, $000f4240
+    jb      @Lb002
+    cmp     esi, $05f5e100
+    jb      @Lb001
+    cmp     esi, $3b9aca00
+    setnb   bl
+    add     bl, $09
+    jmp     @Lb005
+  @Lb001:
+    cmp     esi, $00989680
+    setnb   bl
+    add     bl, $07
+    jmp     @Lb005
+  @Lb002:
+    cmp     esi, $000186a0
+    setnb   bl
+    add     bl, $05
+    jmp     @Lb005
+  @Lb003:
+    cmp     esi, $00000064
+    jb      @Lb004
+    cmp     esi, $000003e8
+    setnb   bl
+    add     bl, $03
+    jmp     @Lb005
+  @Lb004:
+    cmp     esi, $0000000a
+    setnb   bl
+    inc     bl
+  @Lb005:
+    add     rbx, b
+    mov     rcx, 2 + TKRStrRec_sz
+  	add     rcx, rbx
+    and     ecx, $FFFFFFFE
+    push    rcx
+    call    SysGetMem
+    pop     rcx
+    mov     word ptr [ rax + rcx - 2 ], 0
+    mov     [ rax ].TKRStrRec.length, ebx
+    mov     [ rax ].TKRStrRec.refCnt, 1
+    mov     ecx, KRDefaultSystemCodePage
+    mov     word ptr [ rax ].TKRStrRec.codePage, cx
+    mov     word ptr [ rax ].TKRStrRec.elemSize, 1
+    add     rax, TKRStrRec_sz
+    mov     rcx, p
+    mov     [ rcx ], rax
+    mov     rdi, rax
+    sub     rbx, b
+    mov     al, '-'
+    mov     [ rdi ], al
+    add     rdi, b
+    mov     eax, esi
+  @Lb006:
+    cmp     bl, 2
+    jbe     @Lb007
+    mov     ecx, $00000064
+    xor     rdx, rdx
+    div     ecx
+    sub     bl, 2
+    shl     rdx, 1
+    lea     rcx, KRTwoDigitA
+    add     rcx, rdx
+    mov     cx, [ rcx ]
+    mov     [ rdi + rbx ], cx
+    jmp     @Lb006
+  @Lb007:
+    jne     @Lb008
+    shl     rax, 1
+    lea     rcx, KRTwoDigitA
+    add     rcx, rax
+    mov     cx, [ rcx ]
+    mov     [ rdi ], cx
+    jmp     @Lb009
+  @Lb008:
+    or      al, '0'
+    mov     [ rdi ], al
+  @Lb009:
+
+    mov     rax, p
+    pop     rdi
+    pop     rsi
+    pop     rbx
+end;

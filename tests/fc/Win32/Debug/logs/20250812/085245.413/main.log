@@ -1,0 +1,36 @@
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,2647185,-0,44300356,0,91501366]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,8049192,0,09376304,0,92977707]
+[TMainForm.LossesTest] Loss=0,78785315
+[TMainForm.LossesTest] grad=[0,07285459,0,62911123,-0,42785508,0,21470664,0,00590536]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MSE
+Loss= 0.7878531
+grads: [ 0.07285459  0.62911123 -0.42785507  0.21470664  0.00590537]
+
+[TMainForm.LossesTest] == LossValueDiff: 2,93643243054476E-8 EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: 5,02826932868849E-10 EPSILON
+[TMainForm.LossesTest] = Grad[1]: 4,51731785311438E-9 EPSILON
+[TMainForm.LossesTest] = Grad[2]: 4,23955659467623E-9 EPSILON
+[TMainForm.LossesTest] = Grad[3]: 3,76170508631368E-9 EPSILON
+[TMainForm.LossesTest] = Grad[4]: 2,70619366932873E-9 EPSILON
+[TMainForm.LossesTest] FuncName=MAE
+[TMainForm.LossesTest] yTrue=[0,62944738,-0,74602638,0,2647185,-0,44300356,0,91501366]
+[TMainForm.LossesTest] yPred=[0,81158387,0,82675171,-0,8049192,0,09376304,0,92977707]
+[TMainForm.LossesTest] Loss=0,67521646
+[TMainForm.LossesTest] grad=[0,2,0,2,-0,2,0,2,0,2]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MAE
+Loss= 0.67521644
+grads: [ 0.2  0.2 -0.2  0.2  0.2]
+
+[TMainForm.LossesTest] == LossValueDiff: 1,93238609558222E-8 EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[1]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[2]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[3]: 2,9802322276673E-9 EPSILON
+[TMainForm.LossesTest] = Grad[4]: 2,9802322276673E-9 EPSILON

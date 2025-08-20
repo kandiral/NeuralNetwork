@@ -1,0 +1,92 @@
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_145656\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945]
+[TMainForm.LossesTest] yPred=[0,81158]
+[TMainForm.LossesTest] Loss=0,03317
+[TMainForm.LossesTest] grad=[-0,36427]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_145656\
+[TMainForm.do_cmd] ----
+2025-08-11 14:57:01.978200: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_145656\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_145656\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_145656\cfg.json
+---- MSE
+Loss= 0.033173695
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_145742\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945,-0,74603,0,26472,-0,44300,0,91501]
+[TMainForm.LossesTest] yPred=[0,81158,0,82675,-0,80492,0,09376,0,92978]
+[TMainForm.LossesTest] Loss=0,78785
+[TMainForm.LossesTest] grad=[-0,07285,-0,62911,0,42786,-0,21471,-0,00591]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_145742\
+[TMainForm.do_cmd] ----
+2025-08-11 14:57:45.817121: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_145742\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_145742\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_145742\cfg.json
+---- MSE
+Loss= 0.7878531
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_150921\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945,-0,74603,0,26472,-0,44300,0,91501]
+[TMainForm.LossesTest] yPred=[0,81158,0,82675,-0,80492,0,09376,0,92978]
+[TMainForm.LossesTest] Loss=0,78785
+[TMainForm.LossesTest] grad=[-0,07285,-0,62911,0,42786,-0,21471,-0,00591]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_150921\
+[TMainForm.do_cmd] ----
+2025-08-11 15:09:26.855456: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_150921\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_150921\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_150921\cfg.json
+---- MSE
+Loss= 0.7878531
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py", line 44, in <module>
+    tape.watch(y_pred)  # следим за y_pred
+    ^^^^^^^^^^^^^^^^^^
+  File "C:\Python\Python312\Lib\site-packages\tensorflow\python\eager\backprop.py", line 873, in watch
+    for t in _extract_tensors_and_variables(tensor):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python\Python312\Lib\site-packages\tensorflow\python\eager\backprop.py", line 700, in _extract_tensors_and_variables
+    raise ValueError(f"Passed in object {obj} of type {type(obj).__name__!r}"
+ValueError: Passed in object [ 0.81158387  0.82675171 -0.8049192   0.09376304  0.92977707] of type 'ndarray', not tf.Tensor or tf.Variable or ExtensionType.
+
+[TMainForm.LossesTest] _pth=20250811\losses_MSE_151352\
+[TMainForm.LossesTest] FuncName=MSE
+[TMainForm.LossesTest] yTrue=[0,62945,-0,74603,0,26472,-0,44300,0,91501]
+[TMainForm.LossesTest] yPred=[0,81158,0,82675,-0,80492,0,09376,0,92978]
+[TMainForm.LossesTest] Loss=0,78785
+[TMainForm.LossesTest] grad=[-0,07285,-0,62911,0,42786,-0,21471,-0,00591]
+[TMainForm.do_cmd] -----------------------------------------------
+[TMainForm.do_cmd] X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.cmd 20250811\losses_MSE_151352\
+[TMainForm.do_cmd] ----
+2025-08-11 15:13:55.749402: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+sys.argv=['X:\\Projects\\KR\\Test\\NeuralNetwork\\nn\\tests\\py\\losses.py', '20250811\\losses_MSE_151352\\']
+main_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\py\
+data_path=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_151352\
+cfg_file=\\127.0.0.1\E$\WS\GD\Delphi\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250811\losses_MSE_151352\cfg.json
+---- MSE
+Loss= 0.7878531
+grads:
+[ 0.07285459  0.62911123 -0.42785507  0.21470664  0.00590537]
+

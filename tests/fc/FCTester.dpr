@@ -1,0 +1,20 @@
+program FCTester;
+
+uses
+  Vcl.Forms,
+  MainUnit in 'MainUnit.pas' {MainForm},
+  NNCommon in '..\..\NNCommon.pas',
+  NeuralNetwork in '..\..\NeuralNetwork.pas',
+  NNFullyConnectedLayer in '..\..\layers\NNFullyConnectedLayer.pas',
+  mt19937 in '..\..\random\source\mt19937.pas',
+  NNLosses in '..\..\NNLosses.pas',
+  NNOptimizers in '..\..\NNOptimizers.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.

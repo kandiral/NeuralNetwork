@@ -1,0 +1,74 @@
+unit NNLayer;
+
+interface
+
+uses
+  WinAPI.Windows,
+  System.Types, System.Classes, System.SysUtils,
+  NNCommon;
+
+type
+  TNNLayer = class
+  private
+  protected
+    FNeuralNetwork: TObject;
+    FWeights: TNNDynArray;
+    FBiases: TNNDynArray;
+    FUseBiases: boolean;
+    FOutput: TNNDynArray;
+    FInput: PNNDynArray;
+    FForwardPropagation: TNNProcess;
+    FInitWeights: TNNProcess;
+    FInitBiases: TNNProcess;
+    FBackwardPropagation: TNNProcess;
+    procedure EmptyProcess;
+    function GetBiases: PNNDynArray; inline;
+    function GetWeights: PNNDynArray; inline;
+    function GetOutput: PNNDynArray; inline;
+  public
+    class function LoadFromStream( const AStream: TStream ): TNNLayer; virtual; abstract;
+    procedure SaveToStream( const AStream: TStream ); virtual; abstract;
+    constructor Create( const ANeuralNetwork: TObject ); virtual;
+    property Input: PNNDynArray read FInput write FInput;
+    property Output: PNNDynArray read GetOutput;
+    property Weights: PNNDynArray read GetWeights;
+    property Biases: PNNDynArray read GetBiases;
+    property UseBiases: boolean read FUseBiases;
+    procedure Build; virtual; abstract;
+    property InitWeights: TNNProcess read FInitWeights;
+    property InitBiases: TNNProcess read FInitBiases;
+    property ForwardPropagation: TNNProcess read FForwardPropagation;
+    property BackwardPropagation: TNNProcess read FBackwardPropagation;
+  end;
+
+implementation
+
+{ TNNLayer }
+
+constructor TNNLayer.Create( const ANeuralNetwork: TObject );
+begin
+  FNeuralNetwork := ANeuralNetwork;
+  FUseBiases := True;
+end;
+
+procedure TNNLayer.EmptyProcess;
+begin
+
+end;
+
+function TNNLayer.GetBiases: PNNDynArray;
+begin
+  Result := @FBiases;
+end;
+
+function TNNLayer.GetOutput: PNNDynArray;
+begin
+  Result := @FOutput;
+end;
+
+function TNNLayer.GetWeights: PNNDynArray;
+begin
+  Result := @FWeights;
+end;
+
+end.

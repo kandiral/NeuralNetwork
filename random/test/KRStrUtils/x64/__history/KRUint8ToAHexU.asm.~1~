@@ -1,0 +1,29 @@
+asm
+    push    rdi
+    push    rbx
+
+    mov     rdi, rcx
+    mov     rbx, rax
+    and     rbx, $ff
+
+    mov     rcx, 4 + TKRStrRec_sz
+    call    SysGetMem
+    mov     word ptr [ rax + TKRStrRec_sz + 2 ], 0
+    mov     [ rax ].TKRStrRec.length, 2
+    mov     [ rax ].TKRStrRec.refCnt, 1
+    mov     ecx, KRDefaultSystemCodePage
+    mov     word ptr [ rax ].TKRStrRec.codePage, cx
+    mov     word ptr [ rax ].TKRStrRec.elemSize, 1
+    add     rax, TKRStrRec_sz
+    mov     [ rdi ], rax
+
+    shl     rbx, 1
+    lea     rcx, KRTwoHexAU
+    add     rcx, rbx
+    mov     cx, word ptr [ rcx ]
+    mov     [ rax ], cx
+
+    mov     rax, rdi
+    pop     rbx
+    pop     rdi
+end;

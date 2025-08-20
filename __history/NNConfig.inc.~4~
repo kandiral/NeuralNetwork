@@ -1,0 +1,37 @@
+//{$DEFINE NNFLOAT_EXTENDED}
+{$DEFINE NNFLOAT_DOUBLE}
+//{$DEFINE NNFLOAT_SINGLE}
+
+
+{*******************************************************}
+{          Neural Network Float Precision Config        }
+{*******************************************************}
+
+// Проверяем, какой тип используется для NNFloat
+{$IF DEFINED(NNFLOAT_SINGLE)}
+  // Режим SSE (32-битный Single)
+  {$IFDEF CPUX86}
+    {$FPUTYPE SSE}       // Для x86 принудительно включаем SSE
+  {$ENDIF}
+  {$EXCESSPRECISION OFF}
+  //{$MESSAGE 'Using Single (32-bit) for NNFloat'}
+
+{$ELSEIF DEFINED(NNFLOAT_DOUBLE)}
+  // Режим SSE2 (64-битный Double)
+  {$IFDEF CPUX86}
+    {$FPUTYPE SSE2}      // Для x86 принудительно включаем SSE2
+  {$ENDIF}
+  {$EXCESSPRECISION OFF} // Запретить неявное Extended
+  //{$MESSAGE 'Using Double (64-bit) for NNFloat'}
+
+{$ELSE}
+  //{$IF DEFINED(NNFLOAT_EXTENDED)}
+  // Режим FPU x87 (80-битный Extended)
+  {$FPUTYPE X87}
+  {$EXCESSPRECISION ON}  // Разрешить вычисления в Extended
+  //{$MESSAGE 'Using Extended (80-bit) for NNFloat'}
+
+{$ENDIF}
+
+
+

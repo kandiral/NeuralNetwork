@@ -1,0 +1,6 @@
+[TMainForm.FCTest] =======================================================
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+
+[TMainForm.FCTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250818\FC_Forward102417\ydata.dat')

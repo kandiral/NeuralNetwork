@@ -1,0 +1,43 @@
+[TMainForm.LossesTest] =======================================================
+[TMainForm.LossesTest] FuncName=MSLE
+[TMainForm.LossesTest] yTrue=[0,0,0.81158387,-0.74602638,0.2647185,-0.44300356,0.91501366,-0.68477385,0.9143339,0.60056095,-0.15647743,0.58441465,0.31148139,0.69825861,0.35747032,0.48626494,0.31095579,0.41209217,-0.44615404,-0.80573645,0.38965724,0.90044409,-0.12251128,0.53103358,-0.62625479]
+[TMainForm.LossesTest] yPred=[0,0.62944738,0,0.82675171,-0.8049192,0.09376304,0.92977707,0.94118556,-0.0292487,-0.71622731,0.83147105,0.91898485,-0.92857664,0.86798649,0.51548025,-0.21554596,-0.65762662,-0.93633431,-0.90765722,0.64691565,-0.36580104,-0.93110784,-0.23688308,0.59039981,-0.02047121]
+[TMainForm.LossesTest] Loss=0.14874199
+[TMainForm.LossesTest] grad=[0,0.03905927,-0.02624009,0.18979589,-0.01485545,0.01287248,0.00032082,0.16833601,-0.02713716,-0.02350947,0.05738976,0.00967329,-0.01654052,0.00448731,0.0064891,-0.02132951,-0.01652269,-0.01954957,0,0.20545459,-0.01894321,-0.02702895,0,0.0019878,0]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\losses.py
+---- MSLE
+Loss= 0.14874192
+grads: [0.         0.02397087 0.         0.02638735 0.         0.00655527
+ 0.00031837 0.02733582 0.         0.         0.02643206 0.00798677
+ 0.         0.00407959 0.00581252 0.         0.         0.
+ 0.         0.02423459 0.         0.         0.         0.0019136
+ 0.        ]
+
+[TMainForm.LossesTest] == LossValueDiff: 7,40102384932939E-8 EPSILON
+[TMainForm.LossesTest] == GradsDiff: 
+[TMainForm.LossesTest] = Grad[0]: 2,728046558963E-21 EPSILON
+[TMainForm.LossesTest] ERROR: = Grad[1]: 0,0150884058762759
+[TMainForm.LossesTest] ERROR: = Grad[2]: 0,0262400891665665
+[TMainForm.LossesTest] ERROR: = Grad[3]: 0,163408537148469
+[TMainForm.LossesTest] ERROR: = Grad[4]: 0,0148554523548471
+[TMainForm.LossesTest] ERROR: = Grad[5]: 0,00631720974660103
+[TMainForm.LossesTest] ERROR: = Grad[6]: 2,45323781301085E-6
+[TMainForm.LossesTest] ERROR: = Grad[7]: 0,141000187978826
+[TMainForm.LossesTest] ERROR: = Grad[8]: 0,0271371563360113
+[TMainForm.LossesTest] ERROR: = Grad[9]: 0,0235094657434092
+[TMainForm.LossesTest] ERROR: = Grad[10]: 0,0309577041324267
+[TMainForm.LossesTest] ERROR: = Grad[11]: 0,00168651579237816
+[TMainForm.LossesTest] ERROR: = Grad[12]: 0,0165405218042346
+[TMainForm.LossesTest] ERROR: = Grad[13]: 0,000407727316964938
+[TMainForm.LossesTest] ERROR: = Grad[14]: 0,000676574472122422
+[TMainForm.LossesTest] ERROR: = Grad[15]: 0,0213295065417393
+[TMainForm.LossesTest] ERROR: = Grad[16]: 0,0165226917489242
+[TMainForm.LossesTest] ERROR: = Grad[17]: 0,019549568751988
+[TMainForm.LossesTest] = Grad[18]: 4,9256413018274E-21 EPSILON
+[TMainForm.LossesTest] ERROR: = Grad[19]: 0,181219998601549
+[TMainForm.LossesTest] ERROR: = Grad[20]: 0,0189432109996917
+[TMainForm.LossesTest] ERROR: = Grad[21]: 0,0270289494510766
+[TMainForm.LossesTest] = Grad[22]: 3,1089255486894E-21 EPSILON
+[TMainForm.LossesTest] ERROR: = Grad[23]: 7,41996454683125E-5
+[TMainForm.LossesTest] = Grad[24]: OK

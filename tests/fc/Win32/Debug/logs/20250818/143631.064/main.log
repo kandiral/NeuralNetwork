@@ -1,0 +1,25 @@
+[TMainForm.FCTest] =======================================================
+[TMainForm.FCTest] XData=[1.76405236,0.4001572,0.97873795,2.24089327,1.86755797]
+[TMainForm.FCTest] YData=[18.15602975,-8.97336331]
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+xdata: [[1.76405236 0.4001572  0.97873795 2.24089327 1.86755797]]
+w0: [[ 2.52810471 -2.95455577]
+ [-0.1996856   0.90017682]
+ [ 0.9574759  -1.30271442]
+ [ 3.48178654 -1.20643768]
+ [ 2.73511594 -0.17880305]]
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py", line 79, in <module>
+    b = np.reshape(b, (units,)).astype(np.float64)
+        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python\Python312\Lib\site-packages\numpy\_core\fromnumeric.py", line 299, in reshape
+    return _wrapfunc(a, 'reshape', newshape, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python\Python312\Lib\site-packages\numpy\_core\fromnumeric.py", line 57, in _wrapfunc
+    return bound(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^
+ValueError: cannot reshape array of size 0 into shape (2,)
+
+[TMainForm.FCTest] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\tests\data\20250818\FC_Forward143643\ydata.dat')

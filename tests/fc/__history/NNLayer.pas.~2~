@@ -1,0 +1,15 @@
+unit NNLayer;
+
+interface
+
+uses
+  NNCommon;
+
+type
+  TNNLayer = class
+  public
+  end;
+
+implementation
+
+end.

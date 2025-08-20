@@ -1,0 +1,20 @@
+[TMainForm.FCTest] =======================================================
+C:\Python\Python312\Lib\site-packages\keras\src\layers\core\dense.py:87: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+ydata: [[0.]]
+
+[TMainForm.FCTest] == YDataDiff: 
+[TMainForm.FCTest] = YData[0]: OK
+[TMainForm.FCTest] =======================================================
+C:\Python\Python312\Lib\site-packages\keras\src\layers\core\dense.py:87: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+=======================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\tests\py\fc.py
+epsilon= 1e-10
+ydata: [[0.]]
+
+[TMainForm.FCTest] == YDataDiff: 
+[TMainForm.FCTest] = YData[0]: OK

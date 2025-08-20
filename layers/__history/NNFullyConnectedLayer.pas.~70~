@@ -1,0 +1,371 @@
+unit NNFullyConnectedLayer;
+
+interface
+
+{$I ../NNConfig.inc}
+
+uses
+  WinAPI.Windows,
+  System.Types, System.Classes, System.SysUtils,
+  NNCommon, NeuralNetwork;
+
+type
+  TNNFCInitializationData = packed record
+    InitWeightsData: TNNInitParams;
+    InitBiasesData: TNNInitParams;
+  end;
+  PNNFCInitializationData = ^TNNFCInitializationData;
+
+  TNNFullyConnectedLayer = class( TNNLayer )
+  private
+    FInitializationData: TNNFCInitializationData;
+
+    procedure IWZeros;
+    procedure IWNormal_MT19937;
+    procedure IWUniform_MT19937;
+    procedure IWXavierGlorotNormal_MT19937;
+    procedure IWXavierGlorotUniform_MT19937;
+
+    procedure IBZeros;
+    procedure IBNormal_MT19937;
+    procedure IBUniform_MT19937;
+
+    procedure FP_Linear( const AData: PNNFloat );
+    procedure FP_Linear_Bias( const AData: PNNFloat );
+
+    procedure BP_Linear( const AGradients: PNNFloat );
+    procedure BP_Linear_Bias( const AGradients: PNNFloat );
+
+    function GetInitializationData: PNNFCInitializationData; inline;
+  public
+    constructor Create; override;
+    class function ActivationMethods: TNNActivationMethods; override;
+
+    procedure LoadFromStream( const AStream: TStream ); override;
+    procedure SaveToStream( const AStream: TStream ); override;
+
+    property InitializationData: PNNFCInitializationData read GetInitializationData;
+
+    procedure Build; override;
+  end;
+
+implementation
+
+{ TNNFullyConnectedLayer }
+
+class function TNNFullyConnectedLayer.ActivationMethods: TNNActivationMethods;
+begin
+  Result := [ amLinear ];
+end;
+
+procedure TNNFullyConnectedLayer.BP_Linear(const AGradients: PNNFloat);
+begin
+
+end;
+
+procedure TNNFullyConnectedLayer.BP_Linear_Bias(const AGradients: PNNFloat);
+var
+  i, j: int32;
+  grad: double;
+  _inGrads, _biases, _weights, _inpuData, _outGrads: PNNFloat;
+begin
+  _inGrads := AGradients;
+  _biases := @FBiases[ 0 ];
+  _weights := @FWeights[ 0 ];
+
+  // Инициализируем градиенты для следующего слоя (если нужно передать назад)
+  for i := 0 to FInputsCount1 do FGradients[i] := 0;
+
+  // Вычисляем градиенты для весов, смещений и входов
+  for i := 0 to FOutputsCount1 do begin
+    grad := _inGrads^; // Градиент с предыдущего слоя
+    inc( _inGrads );
+
+    // Поскольку активация линейная, производная = 1, градиент не изменяется
+    // Градиенты для смещений
+    _biases^ := _biases^ + grad; // Градиент для bias = grad
+    inc( _biases );
+
+    // Градиенты для весов и входов
+    _inpuData := FInputData;
+    _outGrads := @FGradients[ 0 ];
+    for j := 0 to FInputsCount1 do begin
+      // Градиент для веса: dL/dW = grad * input
+      _weights^ := _weights^ + grad * _inpuData^;
+
+      // Градиент для входа: dL/dX = grad * W
+      _outGrads^ := _outGrads^ + grad * _weights^;
+
+      inc( _weights );
+      inc( _inpuData );
+      inc( _outGrads );
+    end;
+  end;
+end;
+
+procedure TNNFullyConnectedLayer.Build;
+begin
+  if FIndex = 0 then FInputsCount := FNeuralNetwork.InputsCount
+  else FInputsCount := FNeuralNetwork.Layers[ FIndex - 1 ].OutputsCount;
+
+  FInputsCount1 := FInputsCount - 1;
+  FOutputsCount1 := FOutputsCount - 1;
+  FWeightsCount := FOutputsCount * FInputsCount;
+  FWeightsCount1 := FWeightsCount - 1;
+
+  SetLength( FOutputs, FOutputsCount );
+  SetLength( FGradients, FOutputsCount );
+  SetLength( FWeights, FWeightsCount );
+
+  FOutput := @FOutputs[ 0 ];
+  FWeight := @FWeights[ 0 ];
+  FGradient := @FGradients[ 0 ];
+
+  case FActivationMethod of
+    amLinear: begin
+      if FUseBiases then begin
+        FForward := FP_Linear_Bias;
+        FBackward := BP_Linear_Bias;
+      end else begin
+        FForward := FP_Linear;
+        FBackward := BP_Linear;
+      end;
+    end;
+  end;
+
+  FInitBiases := EmptyProcess;
+  FBiasesCount := 0;
+  if FUseBiases then begin
+    FBiasesCount := FOutputsCount;
+    case FInitializationData.InitBiasesData.InitMethod of
+      imZeros: FInitBiases := IBZeros;
+      imNormal:
+        case FInitializationData.InitBiasesData.Generator of
+          prngMT19937: begin
+            FInitBiases := IBNormal_MT19937;
+            FNeuralNetwork.MT19937Params._useInInit := true;
+          end;
+        end;
+      imUniform:
+        case FInitializationData.InitBiasesData.Generator of
+          prngMT19937: begin
+            FInitBiases := IBUniform_MT19937;
+            FNeuralNetwork.MT19937Params._useInInit := true;
+          end;
+        end;
+    end;
+  end;
+  FBiasesCount1 := FBiasesCount - 1;
+  SetLength( FBiases, FBiasesCount );
+  if FBiasesCount > 0 then FBias := @FBiases[ 0 ];
+
+  FInitWeights := EmptyProcess;
+  case FInitializationData.InitWeightsData.InitMethod of
+    imZeros: FInitWeights := IWZeros;
+    imNormal:
+      case FInitializationData.InitWeightsData.Generator of
+        prngMT19937: begin
+          FInitWeights := IWNormal_MT19937;
+          FNeuralNetwork.MT19937Params._useInInit := true;
+        end;
+      end;
+    imUniform:
+      case FInitializationData.InitWeightsData.Generator of
+        prngMT19937: begin
+          FInitWeights := IWUniform_MT19937;
+          FNeuralNetwork.MT19937Params._useInInit := true;
+        end;
+      end;
+    imXavierGlorotNormal:
+      case FInitializationData.InitWeightsData.Generator of
+        prngMT19937: begin
+          FInitWeights := IWXavierGlorotNormal_MT19937;
+          FNeuralNetwork.MT19937Params._useInInit := true;
+        end;
+      end;
+    imXavierGlorotUniform:
+      case FInitializationData.InitWeightsData.Generator of
+        prngMT19937: begin
+          FInitWeights := IWXavierGlorotUniform_MT19937;
+          FNeuralNetwork.MT19937Params._useInInit := true;
+        end;
+      end;
+  end;
+end;
+
+constructor TNNFullyConnectedLayer.Create;
+begin
+  FLayerType := ltFullyConnected;
+  inherited Create;
+end;
+
+procedure TNNFullyConnectedLayer.FP_Linear(const AData: PNNFloat);
+var
+  i, j: int32;
+  _sum: NNFloat;
+  _inputs, _weights: PNNFloat;
+begin
+  _weights := @FWeights[ 0 ];
+  for I := 0 to FOutputsCount1 do begin
+    _inputs := AData;
+    _sum := _inputs^ * _weights^;
+    for j := 1 to FInputsCount1 do begin
+      inc( _inputs );
+      inc( _weights );
+      _sum := _sum + _inputs^ * _weights^;
+    end;
+    inc( _weights );
+    FOutputs[ i ] := _sum;
+  end;
+end;
+
+procedure TNNFullyConnectedLayer.FP_Linear_Bias(const AData: PNNFloat);
+var
+  i, j: int32;
+  _sum: NNFloat;
+  _inputs, _weights: PNNFloat;
+begin
+  _weights := @FWeights[ 0 ];
+  for I := 0 to FOutputsCount1 do begin
+    _inputs := AData;
+    _sum := FBiases[ i ] + _inputs^ * _weights^;
+    for j := 1 to FInputsCount1 do begin
+      inc( _inputs );
+      inc( _weights );
+      _sum := _sum + _inputs^ * _weights^;
+    end;
+    inc( _weights );
+    FOutputs[ i ] := _sum;
+  end;
+end;
+
+function TNNFullyConnectedLayer.GetInitializationData: PNNFCInitializationData;
+begin
+  Result := @FInitializationData;
+end;
+
+procedure TNNFullyConnectedLayer.IBNormal_MT19937;
+var
+  i: int32;
+begin
+  for I := 0 to FBiasesCount1 do
+    FBiases[ i ] := FNeuralNetwork.MT19937_Normal(
+      FInitializationData.InitBiasesData._mu,
+      FInitializationData.InitBiasesData._sigma
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IBUniform_MT19937;
+var
+  i: int32;
+begin
+  for I := 0 to FBiasesCount1 do
+    FBiases[ i ] := FNeuralNetwork.MT19937_Uniform(
+      FInitializationData.InitBiasesData._offset,
+      FInitializationData.InitBiasesData._range
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IBZeros;
+var
+  i: int32;
+begin
+  for I := 0 to FOutputsCount1 do FBiases[ i ] := 0
+end;
+
+procedure TNNFullyConnectedLayer.IWNormal_MT19937;
+var
+  i: int32;
+begin
+  for I := 0 to FWeightsCount1 do
+    FWeights[ i ] := FNeuralNetwork.MT19937_Normal(
+      FInitializationData.InitWeightsData._mu,
+      FInitializationData.InitWeightsData._sigma
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IWUniform_MT19937;
+var
+  i: int32;
+begin
+  for I := 0 to FWeightsCount1 do
+    FWeights[ i ] := FNeuralNetwork.MT19937_Uniform(
+      FInitializationData.InitWeightsData._offset,
+      FInitializationData.InitWeightsData._range
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IWXavierGlorotNormal_MT19937;
+var
+  i: int32;
+  limit: NNFloat;
+begin
+  limit := Sqrt( 2 / ( FInputsCount + FOutputsCount ) );
+  for I := 0 to FWeightsCount1 do
+    FWeights[ i ] := FNeuralNetwork.MT19937_Normal(
+      0,
+      limit
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IWXavierGlorotUniform_MT19937;
+var
+  i: int32;
+  limit: NNFloat;
+begin
+  limit := Sqrt( 6 / ( FInputsCount + FOutputsCount ) );
+  for I := 0 to FWeightsCount1 do
+    FWeights[ i ] := FNeuralNetwork.MT19937_Uniform(
+      -limit,
+      limit
+    );
+end;
+
+procedure TNNFullyConnectedLayer.IWZeros;
+var
+  i: int32;
+begin
+  for I := 0 to FWeightsCount1 do FWeights[ i ] := 0
+end;
+
+procedure TNNFullyConnectedLayer.LoadFromStream(const AStream: TStream);
+begin
+  // Load params
+  AStream.Read( FInitializationData, SizeOf( TNNFCInitializationData ) );
+  AStream.Read( FActivationMethod, SizeOf( FActivationMethod ) );
+  AStream.Read( FUseBiases, SizeOf( FUseBiases ) );
+  AStream.Read( FInputsCount, SizeOf( FInputsCount ) );
+  AStream.Read( FOutputsCount, SizeOf( FOutputsCount ) );
+
+  Build;
+
+  // Load Weights
+  AStream.Read( FWeights[ 0 ], NNFloatSize * FWeightsCount );
+
+  // Load Biases
+  if FUseBiases then
+    AStream.Read( FBiases[ 0 ], NNFloatSize * FOutputsCount );
+end;
+
+procedure TNNFullyConnectedLayer.SaveToStream(const AStream: TStream);
+begin
+  AStream.Write( FLayerType, 4 );
+
+  // Save params
+  AStream.Write( FInitializationData, SizeOf( TNNFCInitializationData ) );
+  AStream.Write( FActivationMethod, SizeOf( FActivationMethod ) );
+  AStream.Write( FUseBiases, SizeOf( FUseBiases ) );
+  AStream.Write( FInputsCount, SizeOf( FInputsCount ) );
+  AStream.Write( FOutputsCount, SizeOf( FOutputsCount ) );
+
+  Build;
+
+  // Save Weights
+  AStream.Write( FWeights[ 0 ], NNFloatSize * FWeightsCount );
+
+  // Save Biases
+  if FUseBiases then
+    AStream.Write( FBiases[ 0 ], NNFloatSize * FOutputsCount );
+end;
+
+end.
