@@ -197,10 +197,7 @@ begin
       end;
   end;
 
-  if Assigned( FOptimizer ) then FreeAndNil( FOptimizer );
-  FOptimizer := TNNOptimizerClassList[ FNeuralNetwork.Optimizer ].Create;
-  FOptimizer.Layer := Self;
-  FOptimizer.Init;
+  inherited;
 end;
 
 constructor TNNFullyConnectedLayer.Create;
@@ -344,7 +341,6 @@ begin
   AStream.Read( FInitializationData, SizeOf( TNNFCInitializationData ) );
   AStream.Read( FActivationMethod, SizeOf( FActivationMethod ) );
   AStream.Read( FUseBiases, SizeOf( FUseBiases ) );
-  AStream.Read( FInputsCount, SizeOf( FInputsCount ) );
   AStream.Read( FOutputsCount, SizeOf( FOutputsCount ) );
 
   Build;
@@ -359,16 +355,12 @@ end;
 
 procedure TNNFullyConnectedLayer.SaveToStream(const AStream: TStream);
 begin
-  AStream.Write( FLayerType, 4 );
-
+  inherited;
   // Save params
   AStream.Write( FInitializationData, SizeOf( TNNFCInitializationData ) );
   AStream.Write( FActivationMethod, SizeOf( FActivationMethod ) );
   AStream.Write( FUseBiases, SizeOf( FUseBiases ) );
-  AStream.Write( FInputsCount, SizeOf( FInputsCount ) );
   AStream.Write( FOutputsCount, SizeOf( FOutputsCount ) );
-
-  Build;
 
   // Save Weights
   AStream.Write( FWeights[ 0 ], NNFloatSize * FWeightsCount );

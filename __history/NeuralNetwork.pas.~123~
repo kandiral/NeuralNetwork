@@ -24,7 +24,8 @@ type
   public
     constructor Create; overload; virtual;
     constructor Create( const AOptimizerOptimizerType: TNNOptimizerType; ALearningRate: NNFloat ); overload;
-    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure Assign( ASource: TNNOptimizer ); virtual;
+    class function LoadFromStream( const AStream: TStream ): TNNOptimizer; virtual;
     procedure SaveToStream( const AStream: TStream ); virtual;
     property Layer: TNNLayer read FLayer write FLayer;
     procedure Init; virtual;
@@ -43,7 +44,7 @@ type
   public
     constructor Create; overload; virtual;
     constructor Create( const ALossFunctionType: TNNLosses ); overload;
-    procedure LoadFromStream( const AStream: TStream ); virtual;
+    class function LoadFromStream( const AStream: TStream ): TNNLossFunction; virtual;
     procedure SaveToStream( const AStream: TStream ); virtual;
     procedure Init; virtual;
     property FuncName: String read FName;
@@ -89,8 +90,8 @@ type
     function GetWeights: PNNDynArray; inline;}
   public
     class function CreateFromStream( const ANeuralNetwork: TObject; const AStream: TStream ): TNNLayer;
-    procedure LoadFromStream( const AStream: TStream ); virtual; abstract;
-    procedure SaveToStream( const AStream: TStream ); virtual; abstract;
+    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure SaveToStream( const AStream: TStream ); virtual;
     constructor Create; virtual;
     destructor Destroy; override;
     property LayerType: TNNLayerType read FLayerType;
@@ -172,7 +173,7 @@ type
 
     procedure Initialize;
     procedure ForwardPropagation( const AData: PNNFloat );
-    procedure BackwardPropagation( const AData, AYTrue: PNNFloat );
+    function BackwardPropagation( const AData, AYTrue: PNNFloat ): NNFloat;
 
     procedure Train( AEpochs, ASequences: int32; AGetDataProc: TNNGetTrainDataProc; AResultProc: TNNTrainResultProc );
 
@@ -201,7 +202,7 @@ begin
   FLayersCount2 := FLayersCount - 2;
 end;
 
-procedure TNeuralNetwork.BackwardPropagation(const AData, AYTrue: PNNFloat);
+function TNeuralNetwork.BackwardPropagation(const AData, AYTrue: PNNFloat): NNFloat;
 var
   i: int32;
 begin
@@ -212,7 +213,7 @@ begin
     FLayers[ i ].ForwardPropagation( FLayers[ i - 1 ].FOutput );
   end;
 
-  FLossFunction.ForwardPass( AYTrue, FOutput, FOutputsCount );
+  Result := FLossFunction.ForwardPass( AYTrue, FOutput, FOutputsCount );
   FLossFunction.BackwardPass( AYTrue, FOutput, FOutputsCount, @FLossGrads[ 0 ] );
 
   FLayers[ FLayersCount1 ].BackwardPropagation( @FLossGrads[ 0 ] );
@@ -254,7 +255,7 @@ end;
 destructor TNeuralNetwork.Destroy;
 begin
   Clear;
-  FLossFunction.Free;
+  if Assigned( FLossFunction ) then FreeAndNil( FLossFunction );
   FMT19937.Free;
   inherited;
 end;
@@ -368,6 +369,9 @@ procedure TNeuralNetwork.SaveToStream(const AStream: TStream);
 var
   i: int32;
 begin
+  AStream.Write( NN_FILE_FORMAT_VERSION, 2 );
+  AStream.Write( SizeOf( NNFloat), 1 );
+
   AStream.Write( FLayersCount, 4 );
   for I := 0 to FLayersCount1 do
     FLayers[ i ].SaveToStream( AStream );
@@ -376,13 +380,14 @@ end;
 procedure TNeuralNetwork.SetLossFunction(const Value: TNNLosses);
 begin
   if Assigned( FLossFunction ) and ( FLossFunction.FType = Value ) then exit;
-  if Assigned( FLossFunction ) then FLossFunction.Free;
+  if Assigned( FLossFunction ) then FreeAndNil( FLossFunction );
   FLossFunction := TNNLossesClassList[ Value ].Create;
 end;
 
 procedure TNeuralNetwork.Train( AEpochs, ASequences: int32; AGetDataProc: TNNGetTrainDataProc; AResultProc: TNNTrainResultProc );
 var
   i, j: int32;
+  _loss: NNFloat;
   _data, _yTrue: PNNFloat;
 begin
   Build( true );
@@ -394,8 +399,8 @@ begin
   for I := 0 to AEpochs do begin
     for j := 0 to ASequences do begin
       AGetDataProc( self, i, j, _data, _yTrue );
-      BackwardPropagation( _data, _yTrue );
-      AResultProc( self, i, j, FLossFunction.MeanValue );
+      _loss := BackwardPropagation( _data, _yTrue );
+      AResultProc( self, i, j, _loss );
     end;
   end;
 end;
@@ -431,6 +436,16 @@ end;
 
 procedure TNNLayer.EmptyProcess; begin end;
 
+procedure TNNLayer.LoadFromStream(const AStream: TStream);
+begin
+
+end;
+
+procedure TNNLayer.SaveToStream(const AStream: TStream);
+begin
+  AStream.Write( FLayerType, 4 );
+end;
+
 { TNNLossFunction }
 
 constructor TNNLossFunction.Create(const ALossFunctionType: TNNLosses);
@@ -449,17 +464,22 @@ begin
 
 end;
 
-procedure TNNLossFunction.LoadFromStream(const AStream: TStream);
+class function TNNLossFunction.LoadFromStream(const AStream: TStream): TNNLossFunction;
 begin
 
 end;
 
 procedure TNNLossFunction.SaveToStream(const AStream: TStream);
 begin
-
+  AStream.Write( FType, 4 );
 end;
 
 { TNNOptimizer }
+
+procedure TNNOptimizer.Assign(ASource: TNNOptimizer);
+begin
+  FLearningRate := ASource.FLearningRate;
+end;
 
 constructor TNNOptimizer.Create(const AOptimizerOptimizerType: TNNOptimizerType;
   ALearningRate: NNFloat);
@@ -479,14 +499,15 @@ begin
 
 end;
 
-procedure TNNOptimizer.LoadFromStream(const AStream: TStream);
+class function TNNOptimizer.LoadFromStream(const AStream: TStream): TNNOptimizer;
 begin
 
 end;
 
 procedure TNNOptimizer.SaveToStream(const AStream: TStream);
 begin
-
+  AStream.Write( FType, 4 );
+  AStream.Write( FLearningRate, SizeOf( FLearningRate ) );
 end;
 
 end.

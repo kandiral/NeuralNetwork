@@ -7,7 +7,7 @@ interface
 uses
   WinAPI.Windows,
   System.Types, System.Classes, System.SysUtils,
-  NNCommon, NeuralNetwork;
+  NNCommon, NeuralNetwork, NNOptimizers;
 
 type
   TNNFCInitializationData = packed record
@@ -39,7 +39,6 @@ type
     function GetInitializationData: PNNFCInitializationData; inline;
   public
     constructor Create; override;
-    class function ActivationMethods: TNNActivationMethods; override;
 
     procedure LoadFromStream( const AStream: TStream ); override;
     procedure SaveToStream( const AStream: TStream ); override;
@@ -52,11 +51,6 @@ type
 implementation
 
 { TNNFullyConnectedLayer }
-
-class function TNNFullyConnectedLayer.ActivationMethods: TNNActivationMethods;
-begin
-  Result := [ amLinear ];
-end;
 
 procedure TNNFullyConnectedLayer.BP_Linear(const AGradients: PNNFloat);
 begin
@@ -73,27 +67,22 @@ begin
   _biasesGrads := @FBiasesGrads[ 0 ];
   _weightsGrads := @FWeightsGrads[ 0 ];
 
-  // Инициализируем градиенты для следующего слоя (если нужно передать назад)
   for i := 0 to FInputsCount1 do FOutGrads[i] := 0;
 
-  // Вычисляем градиенты для весов, смещений и входов
   for i := 0 to FOutputsCount1 do begin
-    grad := _inGrads^; // Градиент с предыдущего слоя
+    grad := _inGrads^;
     inc( _inGrads );
 
-    // Поскольку активация линейная, производная = 1, градиент не изменяется
-    // Градиенты для смещений
-    _biasesGrads^ := _biasesGrads^ + grad; // Градиент для bias = grad
+    _biasesGrads^ := _biasesGrads^ + grad;
     inc( _biasesGrads );
 
-    // Градиенты для весов и входов
     _inpuData := FInputData;
     _outGrads := @FOutGrads[ 0 ];
     for j := 0 to FInputsCount1 do begin
-      // Градиент для веса: dL/dW = grad * input
+      // dL/dW = grad * input
       _weightsGrads^ := _weightsGrads^ + grad * _inpuData^;
 
-      // Градиент для входа: dL/dX = grad * W
+      // dL/dX = grad * W
       _outGrads^ := _outGrads^ + grad * _weightsGrads^;
 
       inc( _weightsGrads );
@@ -101,6 +90,8 @@ begin
       inc( _outGrads );
     end;
   end;
+
+  FOptimizer.Update;
 end;
 
 procedure TNNFullyConnectedLayer.Build( AIsTraining: boolean );
@@ -205,6 +196,11 @@ begin
         end;
       end;
   end;
+
+  if Assigned( FOptimizer ) then FreeAndNil( FOptimizer );
+  FOptimizer := TNNOptimizerClassList[ FNeuralNetwork.Optimizer ].Create;
+  FOptimizer.Layer := Self;
+  FOptimizer.Init;
 end;
 
 constructor TNNFullyConnectedLayer.Create;
@@ -363,8 +359,7 @@ end;
 
 procedure TNNFullyConnectedLayer.SaveToStream(const AStream: TStream);
 begin
-  AStream.Write( FLayerType, 4 );
-
+  inherited;
   // Save params
   AStream.Write( FInitializationData, SizeOf( TNNFCInitializationData ) );
   AStream.Write( FActivationMethod, SizeOf( FActivationMethod ) );

@@ -4,6 +4,9 @@ interface
 
 {$I NNConfig.inc}
 
+const
+  NN_FILE_FORMAT_VERSION = 1;
+
 type
   {$IFDEF NNFLOAT_SINGLE}
     NNFloat = Single;
