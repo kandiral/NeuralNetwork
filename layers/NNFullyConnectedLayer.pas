@@ -7,7 +7,7 @@ interface
 uses
   WinAPI.Windows,
   System.Types, System.Classes, System.SysUtils,
-  NNCommon, NeuralNetwork;
+  NNCommon, NeuralNetwork, NNOptimizers;
 
 type
   TNNFCInitializationData = packed record
@@ -67,27 +67,22 @@ begin
   _biasesGrads := @FBiasesGrads[ 0 ];
   _weightsGrads := @FWeightsGrads[ 0 ];
 
-  // Инициализируем градиенты для следующего слоя (если нужно передать назад)
   for i := 0 to FInputsCount1 do FOutGrads[i] := 0;
 
-  // Вычисляем градиенты для весов, смещений и входов
   for i := 0 to FOutputsCount1 do begin
-    grad := _inGrads^; // Градиент с предыдущего слоя
+    grad := _inGrads^;
     inc( _inGrads );
 
-    // Поскольку активация линейная, производная = 1, градиент не изменяется
-    // Градиенты для смещений
-    _biasesGrads^ := _biasesGrads^ + grad; // Градиент для bias = grad
+    _biasesGrads^ := _biasesGrads^ + grad;
     inc( _biasesGrads );
 
-    // Градиенты для весов и входов
     _inpuData := FInputData;
     _outGrads := @FOutGrads[ 0 ];
     for j := 0 to FInputsCount1 do begin
-      // Градиент для веса: dL/dW = grad * input
+      // dL/dW = grad * input
       _weightsGrads^ := _weightsGrads^ + grad * _inpuData^;
 
-      // Градиент для входа: dL/dX = grad * W
+      // dL/dX = grad * W
       _outGrads^ := _outGrads^ + grad * _weightsGrads^;
 
       inc( _weightsGrads );
@@ -95,6 +90,8 @@ begin
       inc( _outGrads );
     end;
   end;
+
+  FOptimizer.Update;
 end;
 
 procedure TNNFullyConnectedLayer.Build( AIsTraining: boolean );
@@ -199,6 +196,9 @@ begin
         end;
       end;
   end;
+
+  if Assigned( FOptimizer ) then FreeAndNil( FOptimizer );
+  FOptimizer := TNNOptimizerClassList[ FNeuralNetwork.Optimizer ].Create;
 end;
 
 constructor TNNFullyConnectedLayer.Create;

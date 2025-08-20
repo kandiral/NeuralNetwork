@@ -92,6 +92,7 @@ type
     procedure LoadFromStream( const AStream: TStream ); virtual; abstract;
     procedure SaveToStream( const AStream: TStream ); virtual; abstract;
     constructor Create; virtual;
+    destructor Destroy; override;
     property LayerType: TNNLayerType read FLayerType;
     property NeuralNetwork: TNeuralNetwork read FNeuralNetwork write FNeuralNetwork;
 
@@ -421,6 +422,12 @@ begin
     end;
   end;
   raise Exception.Create( 'Error Unknown Layer Pos=' + UIntToStr( AStream.Position - 1 ) );
+end;
+
+destructor TNNLayer.Destroy;
+begin
+  if Assigned( FOptimizer ) then FreeAndNil( FOptimizer );
+  inherited;
 end;
 
 procedure TNNLayer.EmptyProcess; begin end;

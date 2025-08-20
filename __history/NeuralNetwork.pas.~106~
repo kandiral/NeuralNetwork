@@ -19,16 +19,18 @@ type
     FType: TNNOptimizerType; // Тип оптимизатора
     FName: String; // Имя оптимизатора
     FLearningRate: NNFloat; // Скорость обучения
+    FLayer: TNNLayer;
+    FUpdate: TNNProcess;
   public
     constructor Create; overload; virtual;
     constructor Create( const AOptimizerOptimizerType: TNNOptimizerType; ALearningRate: NNFloat ); overload;
+    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure SaveToStream( const AStream: TStream ); virtual;
     procedure Init; virtual;
     property OptName: String read FName;
     property OptType: TNNOptimizerType read FType;
     property LearningRate: NNFloat read FLearningRate write FLearningRate;
-    // Метод для обновления параметров слоя
-    procedure UpdateParameters(AWeights, ABiases, AWeightGrads, ABiasGrads: PNNFloat;
-                              AWeightCount, ABiasCount: int32); virtual; abstract;
+    property Update: TNNProcess read FUpdate;
   end;
 
   TNNLossesClass = class of TNNLossFunction;
@@ -40,6 +42,8 @@ type
   public
     constructor Create; overload; virtual;
     constructor Create( const ALossFunctionType: TNNLosses ); overload;
+    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure SaveToStream( const AStream: TStream ); virtual;
     procedure Init; virtual;
     property FuncName: String read FName;
     property FuncType: TNNLosses read FType;
@@ -61,13 +65,13 @@ type
     FOutputs: TNNDynArray;
     FWeights: TNNDynArray;
     FBiases: TNNDynArray;
-    FOutputGrads: TNNDynArray;
+    FOutGrads, FWeightsGrads, FBiasesGrads: TNNDynArray;
 
     FInputData: PNNFloat;
     FInputGrads: PNNFloat;
     FWeight: PNNFloat;
     FBias: PNNFloat;
-    FGradient: PNNFloat;
+    FOutputGrads, FWeightGrads, FBiasGrads: PNNFloat;
     FOutput: PNNFloat;
 
     FActivationMethod: TNNActivationMethod;
@@ -104,7 +108,10 @@ type
     property Weights: PNNFloat read FWeight;
     property BiasesCount: int32 read FBiasesCount;
     property Biases: PNNFloat read FBias;
-    property Gradients: PNNFloat read FGradient;
+    property InputGrads: PNNFloat read FInputGrads;
+    property OutputGrads: PNNFloat read FOutputGrads;
+    property WeightGrads: PNNFLoat read FWeightGrads;
+    property BiasGrads: PNNFLoat read FBiasGrads;
 
 
 
@@ -137,6 +144,7 @@ type
     FLossGrads: TNNDynArray;
     FInputsCount: int32;
     FOutputsCount: int32;
+    FOptimizer: TNNOptimizerType;
     function GetLossFunction: TNNLosses;
     procedure SetLossFunction(const Value: TNNLosses);
     function GetLayer(AIndex: int32): TNNLayer;
@@ -157,6 +165,7 @@ type
     property Layers[ AIndex: int32 ]: TNNLayer read GetLayer;
     property LayersCount: int32 read FLayersCount;
     property LossFunction: TNNLosses read GetLossFunction write SetLossFunction;
+    property Optimizer: TNNOptimizerType read FOptimizer write FOptimizer;
     procedure Build( AIsTraining: boolean = false );
     procedure Clear;
 
@@ -203,11 +212,11 @@ begin
   end;
 
   FLossFunction.ForwardPass( AYTrue, FOutput, FOutputsCount );
-  FLossFunction.BackwardPass( AYTrue, FOutput, FOutputsCount, @FGradients[ 0 ] );
+  FLossFunction.BackwardPass( AYTrue, FOutput, FOutputsCount, @FLossGrads[ 0 ] );
 
-  FLayers[ FLayersCount1 ].BackwardPropagation( @FGradients[ 0 ] );
+  FLayers[ FLayersCount1 ].BackwardPropagation( @FLossGrads[ 0 ] );
   for I := FLayersCount2 to 0 do
-    FLayers[ i ].BackwardPropagation( FLayers[ i - 1 ].Gradients );
+    FLayers[ i ].BackwardPropagation( FLayers[ i - 1 ].OutputGrads );
 end;
 
 procedure TNeuralNetwork.Build( AIsTraining: boolean );
@@ -434,6 +443,16 @@ begin
 
 end;
 
+procedure TNNLossFunction.LoadFromStream(const AStream: TStream);
+begin
+
+end;
+
+procedure TNNLossFunction.SaveToStream(const AStream: TStream);
+begin
+
+end;
+
 { TNNOptimizer }
 
 constructor TNNOptimizer.Create(const AOptimizerOptimizerType: TNNOptimizerType;
@@ -450,6 +469,16 @@ begin
 end;
 
 procedure TNNOptimizer.Init;
+begin
+
+end;
+
+procedure TNNOptimizer.LoadFromStream(const AStream: TStream);
+begin
+
+end;
+
+procedure TNNOptimizer.SaveToStream(const AStream: TStream);
 begin
 
 end;
