@@ -1,0 +1,17 @@
+[TMainForm.FCForward] ==== Delphi Test ===================================================
+[TMainForm.FCForward] XData=[1,1,1,1,1]
+[TMainForm.FCForward] YTrue=[0,0]
+[TMainForm.FCForward] YData=[9.43160621,-4.5514794]
+==== Python Test ===================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py
+epsilon= 1e-10
+xdata: [[1. 1. 1. 1. 1.]]
+y_true: [[0. 0.]]
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py", line 47, in <module>
+    optimizer_type = optimizer_map[cfg['optimizer']] # Select optimizer based on cfg
+                                   ~~~^^^^^^^^^^^^^
+KeyError: 'optimizer'
+
+[TMainForm.LossesTest] ==== Result ===================================================
+[TMainForm.FCForward] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\data\20250820\FC_Forward124745\ydata.dat')

@@ -26,6 +26,7 @@ type
     constructor Create( const AOptimizerOptimizerType: TNNOptimizerType; ALearningRate: NNFloat ); overload;
     procedure LoadFromStream( const AStream: TStream ); virtual;
     procedure SaveToStream( const AStream: TStream ); virtual;
+    property Layer: TNNLayer read FLayer write FLayer;
     procedure Init; virtual;
     property OptName: String read FName;
     property OptType: TNNOptimizerType read FType;
@@ -47,7 +48,6 @@ type
     procedure Init; virtual;
     property FuncName: String read FName;
     property FuncType: TNNLosses read FType;
-    property MeanValue: NNFloat read FMeanValue;
     function ForwardPass( AYTrue, AYPred: PNNFloat; ACount: int32 ): NNFloat; virtual; abstract;
     procedure BackwardPass( AYTrue, AYPred: PNNFloat; ACount: int32; AGradients: PNNFloat ); virtual; abstract;
   end;
@@ -172,7 +172,7 @@ type
 
     procedure Initialize;
     procedure ForwardPropagation( const AData: PNNFloat );
-    procedure BackwardPropagation( const AData, AYTrue: PNNFloat );
+    function BackwardPropagation( const AData, AYTrue: PNNFloat ): NNFloat;
 
     procedure Train( AEpochs, ASequences: int32; AGetDataProc: TNNGetTrainDataProc; AResultProc: TNNTrainResultProc );
 
@@ -201,7 +201,7 @@ begin
   FLayersCount2 := FLayersCount - 2;
 end;
 
-procedure TNeuralNetwork.BackwardPropagation(const AData, AYTrue: PNNFloat);
+function TNeuralNetwork.BackwardPropagation(const AData, AYTrue: PNNFloat): NNFloat;
 var
   i: int32;
 begin
@@ -212,12 +212,12 @@ begin
     FLayers[ i ].ForwardPropagation( FLayers[ i - 1 ].FOutput );
   end;
 
-  FLossFunction.ForwardPass( AYTrue, FOutput, FOutputsCount );
+  Result := FLossFunction.ForwardPass( AYTrue, FOutput, FOutputsCount );
   FLossFunction.BackwardPass( AYTrue, FOutput, FOutputsCount, @FLossGrads[ 0 ] );
 
   FLayers[ FLayersCount1 ].BackwardPropagation( @FLossGrads[ 0 ] );
-  for I := FLayersCount2 to 0 do
-    FLayers[ i ].BackwardPropagation( FLayers[ i - 1 ].OutputGrads );
+  for I := FLayersCount2 downto 0 do
+    FLayers[ i ].BackwardPropagation( FLayers[ i + 1 ].OutputGrads );
 end;
 
 procedure TNeuralNetwork.Build( AIsTraining: boolean );
@@ -254,7 +254,7 @@ end;
 destructor TNeuralNetwork.Destroy;
 begin
   Clear;
-  FLossFunction.Free;
+  if Assigned( FLossFunction ) then FreeAndNil( FLossFunction );
   FMT19937.Free;
   inherited;
 end;
@@ -376,27 +376,27 @@ end;
 procedure TNeuralNetwork.SetLossFunction(const Value: TNNLosses);
 begin
   if Assigned( FLossFunction ) and ( FLossFunction.FType = Value ) then exit;
-  if Assigned( FLossFunction ) then FLossFunction.Free;
+  if Assigned( FLossFunction ) then FreeAndNil( FLossFunction );
   FLossFunction := TNNLossesClassList[ Value ].Create;
 end;
 
 procedure TNeuralNetwork.Train( AEpochs, ASequences: int32; AGetDataProc: TNNGetTrainDataProc; AResultProc: TNNTrainResultProc );
 var
   i, j: int32;
+  _loss: NNFloat;
   _data, _yTrue: PNNFloat;
 begin
   Build( true );
   Initialize;
 
   FLossFunction.Init;
-  for I := 0 to FLayersCount1 do FLayers[ i ].FOptimizer.Init;
 
   Dec( ASequences );
   for I := 0 to AEpochs do begin
     for j := 0 to ASequences do begin
       AGetDataProc( self, i, j, _data, _yTrue );
-      BackwardPropagation( _data, _yTrue );
-      AResultProc( self, i, j, FLossFunction.MeanValue );
+      _loss := BackwardPropagation( _data, _yTrue );
+      AResultProc( self, i, j, _loss );
     end;
   end;
 end;

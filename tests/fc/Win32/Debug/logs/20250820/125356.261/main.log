@@ -1,0 +1,93 @@
+[TMainForm.FCForward] ==== Delphi Test ===================================================
+[TMainForm.FCForward] XData=[1,1,1,1,1]
+[TMainForm.FCForward] YTrue=[0,0]
+[TMainForm.FCForward] YData=[9.43160621,-4.5514794]
+==== Python Test ===================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py
+epsilon= 1e-10
+xdata: [[1. 1. 1. 1. 1.]]
+y_true: [[0. 0.]]
+w0: [[ 2.52810471 -2.95455577]
+ [-0.1996856   0.90017682]
+ [ 0.9574759  -1.30271442]
+ [ 3.48178654 -1.20643768]
+ [ 2.73511594 -0.17880305]]
+b0: [-0.07119128  0.19085471]
+Backward pass 1/1
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py", line 91, in <module>
+    loss = model.loss(y_true, predictions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'str' object is not callable
+
+[TMainForm.LossesTest] ==== Result ===================================================
+[TMainForm.FCForward] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\data\20250820\FC_Forward125359\ydata.dat')
+[TMainForm.FCForward] ==== Delphi Test ===================================================
+[TMainForm.FCForward] XData=[1,1,1,1,1]
+[TMainForm.FCForward] YTrue=[0,0]
+[TMainForm.FCForward] YData=[9.43160621,-4.5514794]
+==== Python Test ===================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py
+epsilon= 1e-10
+xdata: [[1. 1. 1. 1. 1.]]
+y_true: [[0. 0.]]
+Traceback (most recent call last):
+  File "X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py", line 51, in <module>
+    0: losses.MeanSquaredError(),
+       ^^^^^^
+NameError: name 'losses' is not defined
+
+[TMainForm.LossesTest] ==== Result ===================================================
+[TMainForm.FCForward] ERROR: not FileExists('X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\data\20250820\FC_Forward131820\ydata.dat')
+[TMainForm.FCForward] ==== Delphi Test ===================================================
+[TMainForm.FCForward] XData=[1,1,1,1,1]
+[TMainForm.FCForward] YTrue=[0,0]
+[TMainForm.FCForward] YData=[9.43160621,-4.5514794]
+==== Python Test ===================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py
+epsilon= 1e-10
+xdata: [[1. 1. 1. 1. 1.]]
+y_true: [[0. 0.]]
+w0: [[ 2.52810471 -2.95455577]
+ [-0.1996856   0.90017682]
+ [ 0.9574759  -1.30271442]
+ [ 3.48178654 -1.20643768]
+ [ 2.73511594 -0.17880305]]
+b0: [-0.07119128  0.19085471]
+Backward pass 1/1
+ydata: [[ 8.86570984 -4.27839063]]
+
+[TMainForm.LossesTest] ==== Result ===================================================
+[TMainForm.FCForward] == YDataDiff: 
+[TMainForm.FCForward] ERROR: = YData[0]: 0,565896372470403
+[TMainForm.FCForward] ERROR: = YData[1]: 0,273088763753709
+[TMainForm.FCForward] ==== Delphi Test ===================================================
+[TMainForm.FCForward] XData=[1,1,1,1,1]
+[TMainForm.FCForward] YTrue=[0,0]
+[TMainForm.FCForward] YData=[9.43160621,-4.5514794]
+==== Python Test ===================================================
+---- X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork\tests\py\fc_backward.py
+epsilon= 1e-10
+xdata: [[1. 1. 1. 1. 1.]]
+y_true: [[0. 0.]]
+w0: [[ 2.52810471 -2.95455577]
+ [-0.1996856   0.90017682]
+ [ 0.9574759  -1.30271442]
+ [ 3.48178654 -1.20643768]
+ [ 2.73511594 -0.17880305]]
+b0: [-0.07119128  0.19085471]
+Backward pass 1/1
+predictions= tf.Tensor([[ 9.43160621 -4.5514794 ]], shape=(1, 2), dtype=float64)
+loss= tf.Tensor(54.835580175512774, shape=(), dtype=float64)
+gradients= [<tf.Tensor: shape=(5, 2), dtype=float64, numpy=
+array([[ 9.43160621, -4.5514794 ],
+       [ 9.43160621, -4.5514794 ],
+       [ 9.43160621, -4.5514794 ],
+       [ 9.43160621, -4.5514794 ],
+       [ 9.43160621, -4.5514794 ]])>, <tf.Tensor: shape=(2,), dtype=float64, numpy=array([ 9.43160621, -4.5514794 ])>]
+ydata: [[ 8.86570984 -4.27839063]]
+
+[TMainForm.LossesTest] ==== Result ===================================================
+[TMainForm.FCForward] == YDataDiff: 
+[TMainForm.FCForward] ERROR: = YData[0]: 0,565896372470403
+[TMainForm.FCForward] ERROR: = YData[1]: 0,273088763753709

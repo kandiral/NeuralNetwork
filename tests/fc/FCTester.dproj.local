@@ -1,27 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.041,X:\Projects\KR\Test\NeuralNetwork\nn\NNCommon.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.503,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.dfm=X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\MainUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.486,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNLayer.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.808,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNLayer.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.920,X:\Projects\KR\Test\NeuralNetwork\nn\layers\NNFullyConnectedLayer.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.503,X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\MainUnit.dfm=C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.037,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.009,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.503,X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\MainUnit.pas=C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.161,X:\Projects\KR\Test\NeuralNetwork\nn\NNLayer.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.020,=X:\Projects\KR\Test\NeuralNetwork\nn\NNLayer.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.547,=X:\Projects\KR\Test\NeuralNetwork\nn\random\source\mt19937.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.908,X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.420,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNOptimizers.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.854,X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\FCTester.dproj=C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.908,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\NeuralNetwork.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.486,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNLayer.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.041,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\NNCommon.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.020,=X:\Projects\KR\Test\NeuralNetwork\nn\NNLayer.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.161,X:\Projects\KR\Test\NeuralNetwork\nn\NNLayer.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.547,=X:\Projects\KR\Test\NeuralNetwork\nn\random\source\mt19937.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.012,X:\Projects\KR\Test\NeuralNetwork\nn\NNLosses.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.934,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNOptimizers.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.920,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\layers\NNFullyConnectedLayer.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.854,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Project1.dproj=X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\FCTester.dproj</Transaction>
     <Transaction>1899.12.30 00:00:00.000.170,=X:\Projects\KR\Test\NeuralNetwork\nn\NNOptimizers.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.588,=C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.934,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\NNOptimizers.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.886,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.154,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.935,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.503,C:\Users\kandiral\Documents\Embarcadero\Studio\Projects\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\tests\lc\MainUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.037,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.402,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.012,X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas=X:\Projects\KR\Test\NeuralNetwork\nn\NNLosses.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.935,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.154,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.886,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.009,=X:\Projects\KR\Test\NeuralNetwork\nn\tests\fc\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>

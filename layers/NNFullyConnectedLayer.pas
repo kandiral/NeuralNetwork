@@ -199,6 +199,8 @@ begin
 
   if Assigned( FOptimizer ) then FreeAndNil( FOptimizer );
   FOptimizer := TNNOptimizerClassList[ FNeuralNetwork.Optimizer ].Create;
+  FOptimizer.Layer := Self;
+  FOptimizer.Init;
 end;
 
 constructor TNNFullyConnectedLayer.Create;

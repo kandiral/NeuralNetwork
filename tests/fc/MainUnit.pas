@@ -79,6 +79,8 @@ type
     cfgFCOutputTrueUseSeed: TKRIniCfgParam;
     cfgFCOutputTrueRandSeed: TKRIniCfgParam;
     cfgFCOutputTrue: TKRIniCfgParam;
+    cbFCOptimizer: TKRBLComboBox;
+    cfgFCOptimizer: TKRIniCfgParam;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -113,6 +115,7 @@ type
     procedure LogErr( const AMethod, AText: AnsiString ); inline;
     function PrintDynArray( var AArray: TNNDynArray ): String;
     function PrintArray( AArray: PNNFloat; ACount: int32 ): String;
+    function PrintMatrix( AMatrix: PNNFloat; AWidth, AHeight: int32 ): String;
   end;
 
 var
@@ -153,6 +156,7 @@ var
   xData, fla, yTrue: TNNDynArray;
   dw: uint32;
   i64: int64;
+  _loss: NNFloat;
 begin
 
   btnFCForward.Enabled := false;
@@ -178,6 +182,8 @@ begin
     js.AddChild( TKRJSONInt.Create( 'count', _count ) );
     nn.InputsCount := cfgFCInputsCount.Value;
     js.AddChild( TKRJSONInt.Create( 'inputsCount', nn.InputsCount ) );
+    nn.Optimizer := TNNOptimizerType( cbFCOptimizer.ItemIndex );
+    js.AddChild( TKRJSONInt.Create( 'optimizer', Int32( nn.Optimizer ) ) );
     jsa := TKRJSONArray( js.AddChild( TKRJSONArray.Create( 'layers' ) ) );
     for I := 0 to _layersCount - 1 do begin
       fc := TNNFullyConnectedLayer.Create;
@@ -210,14 +216,8 @@ begin
     nn.LossFunction := TNNLosses( Int32( cfgFCLossFunc.Value ) );
     js.AddChild( TKRJSONInt.Create( 'lossFunc', Int32( nn.LossFunction ) ) );
 
-    nn.Build;
+    nn.Build( true );
     nn.Initialize;
-
-    for I := 0 to _layersCount - 1 do begin
-      SaveFloatArrayToFile( _pth + 'w' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Weights, nn.Layers[ i ].WeightsCount );
-      if nn.Layers[ i ].UseBiases then
-        SaveFloatArrayToFile( _pth + 'b' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Biases, nn.Layers[ i ].BiasesCount );
-    end;
 
     if chFCInputDataUseSeed.Checked then begin
       dw := cfgFCInputDataRandSeed.Value;
@@ -257,16 +257,26 @@ begin
     SaveFloatArrayToFile( _pth + 'ytrue.dat', @yTrue[ 0 ], nn.OutputsCount );
     Log( 'FCForward', 'YTrue=' + PrintDynArray( yTrue ) );
 
+    for I := 0 to _layersCount - 1 do begin
+      SaveFloatArrayToFile( _pth + 'w' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Weights, nn.Layers[ i ].WeightsCount );
+      Log( 'FCForward', 'Start Weights For Layer #' + KRUInt32ToStr( i ) + ': ' + PrintMatrix( nn.Layers[ i ].Weights, nn.Layers[ i ].InputsCount, nn.Layers[ i ].OutputsCount ) );
+      if nn.Layers[ i ].UseBiases then begin
+        SaveFloatArrayToFile( _pth + 'b' + KRUint32ToStr( i ) + '.dat', nn.Layers[ i ].Biases, nn.Layers[ i ].BiasesCount );
+        Log( 'FCForward', 'Start Biases For Layer #' + KRUInt32ToStr( i ) + ': ' + PrintArray( nn.Layers[ i ].Biases, nn.Layers[ i ].OutputsCount ) );
+      end;
+    end;
 
     for I := 0 to _count - 1 do begin
-      nn.BackwardPropagation( @xData[ 0 ], @yTrue[ 0 ] );
+      Log( 'FCForward', '---- Backward pass ' + KRUInt32ToStr( i + 1 ) + '/' + KRUInt32ToStr( _count ) );
+      _loss := nn.BackwardPropagation( @xData[ 0 ], @yTrue[ 0 ] );
+      Log( 'FCForward', 'loss=' + FormatFloat( '0.########', _loss, fs ) );
     end;
 
 
     Log( 'FCForward', 'YData=' + PrintArray( nn.Output, nn.OutputsCount ) );
 
     js.SaveToFile( _pth + 'cfg.json' );
-    do_cmd( pyPath + 'fc.cmd ' + _pth0 );
+    do_cmd( pyPath + 'fc_backward.cmd ' + _pth0 );
 
 
     Log( 'LossesTest', '==== Result ===================================================' );
@@ -397,7 +407,7 @@ begin
     Log( 'FCForward', 'YData=' + PrintArray( nn.Output, nn.OutputsCount ) );
 
     js.SaveToFile( _pth + 'cfg.json' );
-    do_cmd( pyPath + 'fc.cmd ' + _pth0 );
+    do_cmd( pyPath + 'fc_forward.cmd ' + _pth0 );
 
     Log( 'LossesTest', '==== Result ===================================================' );
 
@@ -831,6 +841,13 @@ begin
   cbFCInitBiases.Items.EndUpdate;
   cbFCInitBiases.CfgParam := cfgFCInitBiases;
 
+  cbFCOptimizer.Items.BeginUpdate;
+  for I := int32( Low( TNNOptimizerType ) ) to int32( High( TNNOptimizerType ) ) do begin
+    cbFCOptimizer.Items.AddObject( TNNOptimizerType_str[ TNNOptimizerType( i ) ], Pointer( i ) );
+  end;
+  cbFCOptimizer.Items.EndUpdate;
+  cbFCOptimizer.CfgParam := cfgFCOptimizer;
+
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -919,6 +936,26 @@ begin
   fs.DecimalSeparator := '.';
   for I := 0 to Length( AArray ) - 1 do
     Result := Result + FormatFloat( '0.########', AArray[ i ], fs ) + ',';
+  Result := '[' + Copy( Result, 1, Length( Result ) - 1 ) + ']';
+end;
+
+function TMainForm.PrintMatrix(AMatrix: PNNFloat; AWidth, AHeight: int32): String;
+var
+  i, j: int32;
+  fs: TFormatSettings;
+  s: String;
+begin
+  Result := '';
+  fs.DecimalSeparator := '.';
+
+  for I := 0 to AHeight - 1 do begin
+    s := '';
+    for j := 0 to AWidth - 1 do begin
+      s := s + FormatFloat( '0.########', AMatrix^, fs ) + ',';
+      inc( AMatrix );
+    end;
+    Result := Result + '[' + Copy( s, 1, Length( s ) - 1 ) + '],';
+  end;
   Result := '[' + Copy( Result, 1, Length( Result ) - 1 ) + ']';
 end;
 

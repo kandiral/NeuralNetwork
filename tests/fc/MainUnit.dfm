@@ -215,17 +215,17 @@ object MainForm: TMainForm
           BLabel.Caption = 'InputsCount'
         end
         object GroupBox1: TGroupBox
-          Left = 294
+          Left = 408
           Top = 0
-          Width = 444
+          Width = 330
           Height = 265
           Align = alRight
           Caption = 'Layers'
           TabOrder = 1
-          ExplicitLeft = 288
+          ExplicitLeft = 402
           ExplicitHeight = 256
           object lbFCLayersList: TListBox
-            Left = 296
+            Left = 182
             Top = 17
             Width = 146
             Height = 246
@@ -251,8 +251,8 @@ object MainForm: TMainForm
             BLabel.Caption = 'Activation'
           end
           object veFCOutputsCount: TKRBLValueEdit
-            Left = 136
-            Top = 41
+            Left = 17
+            Top = 86
             Width = 74
             Height = 23
             CfgParam = cfgFCOutputsCount
@@ -272,8 +272,8 @@ object MainForm: TMainForm
             BLabel.Caption = 'Outputs Count'
           end
           object cbFCInitWeights: TKRBLComboBox
-            Left = 16
-            Top = 89
+            Left = 17
+            Top = 141
             Width = 114
             Height = 23
             Style = csDropDownList
@@ -287,8 +287,8 @@ object MainForm: TMainForm
             BLabel.Caption = 'Init Weights'
           end
           object cbFCInitBiases: TKRBLComboBox
-            Left = 136
-            Top = 89
+            Left = 17
+            Top = 185
             Width = 114
             Height = 23
             Style = csDropDownList
@@ -302,8 +302,8 @@ object MainForm: TMainForm
             BLabel.Caption = 'Init Biases'
           end
           object btnFCAddLayer: TButton
-            Left = 16
-            Top = 193
+            Left = 17
+            Top = 217
             Width = 75
             Height = 25
             Caption = 'AddLayer'
@@ -311,16 +311,16 @@ object MainForm: TMainForm
             OnClick = btnFCAddLayerClick
           end
           object btnFCDelLayer: TButton
-            Left = 97
-            Top = 193
+            Left = 98
+            Top = 217
             Width = 75
             Height = 25
             Caption = 'DelLayer'
             TabOrder = 6
           end
           object chFCUseBiases: TKRCheckBox
-            Left = 216
-            Top = 44
+            Left = 97
+            Top = 89
             Width = 73
             Height = 17
             CfgParam = cfgFCUseBiases
@@ -424,7 +424,7 @@ object MainForm: TMainForm
         object cbFCLossFunc: TKRBLComboBox
           Left = 94
           Top = 25
-          Width = 145
+          Width = 114
           Height = 23
           Style = csDropDownList
           ItemIndex = -1
@@ -519,6 +519,21 @@ object MainForm: TMainForm
           CfgBit = -1
           Caption = 'Use Seed'
           TabOrder = 13
+        end
+        object cbFCOptimizer: TKRBLComboBox
+          Left = 214
+          Top = 25
+          Width = 114
+          Height = 23
+          Style = csDropDownList
+          ItemIndex = -1
+          TabOrder = 14
+          BLabel.Width = 52
+          BLabel.Height = 15
+          BLabel.AutoSize = True
+          BLabel.Position = blpTopLeft
+          BLabel.Spacing = 3
+          BLabel.Caption = 'Optimizer'
         end
       end
     end
@@ -677,6 +692,12 @@ object MainForm: TMainForm
       Section = 'FC'
     end
     object cfgFCOutputTrue: TKRIniCfgParam
+      ValueType = icvtInteger
+      DefaultValue = '0'
+      Encrypt = False
+      Section = 'FC'
+    end
+    object cfgFCOptimizer: TKRIniCfgParam
       ValueType = icvtInteger
       DefaultValue = '0'
       Encrypt = False
