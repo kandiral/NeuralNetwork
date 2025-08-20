@@ -24,6 +24,8 @@ type
   public
     constructor Create; overload; virtual;
     constructor Create( const AOptimizerOptimizerType: TNNOptimizerType; ALearningRate: NNFloat ); overload;
+    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure SaveToStream( const AStream: TStream ); virtual;
     procedure Init; virtual;
     property OptName: String read FName;
     property OptType: TNNOptimizerType read FType;
@@ -40,6 +42,8 @@ type
   public
     constructor Create; overload; virtual;
     constructor Create( const ALossFunctionType: TNNLosses ); overload;
+    procedure LoadFromStream( const AStream: TStream ); virtual;
+    procedure SaveToStream( const AStream: TStream ); virtual;
     procedure Init; virtual;
     property FuncName: String read FName;
     property FuncType: TNNLosses read FType;
@@ -212,7 +216,7 @@ begin
 
   FLayers[ FLayersCount1 ].BackwardPropagation( @FLossGrads[ 0 ] );
   for I := FLayersCount2 to 0 do
-    FLayers[ i ].BackwardPropagation( FLayers[ i - 1 ].Gradients );
+    FLayers[ i ].BackwardPropagation( FLayers[ i - 1 ].OutputGrads );
 end;
 
 procedure TNeuralNetwork.Build( AIsTraining: boolean );
@@ -439,6 +443,16 @@ begin
 
 end;
 
+procedure TNNLossFunction.LoadFromStream(const AStream: TStream);
+begin
+
+end;
+
+procedure TNNLossFunction.SaveToStream(const AStream: TStream);
+begin
+
+end;
+
 { TNNOptimizer }
 
 constructor TNNOptimizer.Create(const AOptimizerOptimizerType: TNNOptimizerType;
@@ -455,6 +469,16 @@ begin
 end;
 
 procedure TNNOptimizer.Init;
+begin
+
+end;
+
+procedure TNNOptimizer.LoadFromStream(const AStream: TStream);
+begin
+
+end;
+
+procedure TNNOptimizer.SaveToStream(const AStream: TStream);
 begin
 
 end;

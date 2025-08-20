@@ -39,7 +39,6 @@ type
     function GetInitializationData: PNNFCInitializationData; inline;
   public
     constructor Create; override;
-    class function ActivationMethods: TNNActivationMethods; override;
 
     procedure LoadFromStream( const AStream: TStream ); override;
     procedure SaveToStream( const AStream: TStream ); override;
@@ -53,11 +52,6 @@ implementation
 
 { TNNFullyConnectedLayer }
 
-class function TNNFullyConnectedLayer.ActivationMethods: TNNActivationMethods;
-begin
-  Result := [ amLinear ];
-end;
-
 procedure TNNFullyConnectedLayer.BP_Linear(const AGradients: PNNFloat);
 begin
 
@@ -67,14 +61,14 @@ procedure TNNFullyConnectedLayer.BP_Linear_Bias(const AGradients: PNNFloat);
 var
   i, j: int32;
   grad: double;
-  _inGrads, _biases, _weights, _inpuData, _outGrads: PNNFloat;
+  _inGrads, _biasesGrads, _weightsGrads, _inpuData, _outGrads: PNNFloat;
 begin
   _inGrads := AGradients;
-  _biases := @FBiases[ 0 ];
-  _weights := @FWeights[ 0 ];
+  _biasesGrads := @FBiasesGrads[ 0 ];
+  _weightsGrads := @FWeightsGrads[ 0 ];
 
   // Инициализируем градиенты для следующего слоя (если нужно передать назад)
-  for i := 0 to FInputsCount1 do FGradients[i] := 0;
+  for i := 0 to FInputsCount1 do FOutGrads[i] := 0;
 
   // Вычисляем градиенты для весов, смещений и входов
   for i := 0 to FOutputsCount1 do begin
@@ -83,20 +77,20 @@ begin
 
     // Поскольку активация линейная, производная = 1, градиент не изменяется
     // Градиенты для смещений
-    _biases^ := _biases^ + grad; // Градиент для bias = grad
-    inc( _biases );
+    _biasesGrads^ := _biasesGrads^ + grad; // Градиент для bias = grad
+    inc( _biasesGrads );
 
     // Градиенты для весов и входов
     _inpuData := FInputData;
-    _outGrads := @FGradients[ 0 ];
+    _outGrads := @FOutGrads[ 0 ];
     for j := 0 to FInputsCount1 do begin
       // Градиент для веса: dL/dW = grad * input
-      _weights^ := _weights^ + grad * _inpuData^;
+      _weightsGrads^ := _weightsGrads^ + grad * _inpuData^;
 
       // Градиент для входа: dL/dX = grad * W
-      _outGrads^ := _outGrads^ + grad * _weights^;
+      _outGrads^ := _outGrads^ + grad * _weightsGrads^;
 
-      inc( _weights );
+      inc( _weightsGrads );
       inc( _inpuData );
       inc( _outGrads );
     end;

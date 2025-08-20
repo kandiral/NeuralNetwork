@@ -209,8 +209,41 @@ begin
 end;
 
 procedure TNNAdam.UpdateNoBias;
+var
+  i: int32;
+  m_hat, v_hat: NNFloat;
+  beta1_t, beta2_t: NNFloat;
+  WeightsM, WeightsV, WeightGrads, Weights: PNNFloat;
 begin
+  Inc(FT); // Увеличиваем счётчик шагов
 
+  // Коррекция смещения для моментов
+  beta1_t := Power(FBeta1, FT);
+  beta2_t := Power(FBeta2, FT);
+
+  // Копируем указатели для итерации
+  WeightsM := @FWeightsM[ 0 ];
+  WeightsV := @FWeightsV[ 0 ];
+
+  WeightGrads := FLayer.WeightGrads;
+  Weights := FLayer.Weights;
+
+  // Обновление весов
+  for i := 0 to FWeightCount1 do begin
+    // Первый момент: m = beta1 * m + (1 - beta1) * grad
+    WeightsM^ := FBeta1 * WeightsM^ + (1 - FBeta1) * WeightGrads^;
+    // Второй момент: v = beta2 * v + (1 - beta2) * grad^2
+    WeightsV^ := FBeta2 * WeightsV^ + (1 - FBeta2) * Sqr(WeightGrads^);
+    // Коррекция смещения
+    m_hat := WeightsM^ / (1 - beta1_t);
+    v_hat := WeightsV^ / (1 - beta2_t);
+    // Обновление веса
+    Weights^ := Weights^ - FLearningRate * m_hat / (Sqrt(v_hat) + FEpsilon);
+    Inc(Weights);
+    Inc(WeightGrads);
+    Inc(WeightsM);
+    Inc(WeightsV);
+  end;
 end;
 
 { TNNRMSProp }
@@ -227,52 +260,82 @@ begin
   FWeightCount := 0;
   FBiasCount := 0;
 
-  SetLength( FWeightsV, AWeightCount );
-  FillChar (FWeightsV[ 0 ], AWeightCount * SizeOf(NNFloat), 0 );
-  FWeightCount := AWeightCount;
+  FUpdate := UpdateNoBias;
+  FWeightCount := FLayer.WeightsCount;
+  FWeightCount1 := FWeightCount - 1;
+  SetLength( FWeightsV, FWeightCount );
+  FillChar (FWeightsV[ 0 ], FWeightCount * SizeOf(NNFloat), 0 );
 
-  SetLength( FBiasesV, ABiasCount );
-  FillChar( FBiasesV[ 0 ], ABiasCount * SizeOf(NNFloat), 0);
-  FBiasCount := ABiasCount;
+  if FLayer.UseBiases then begin
+    FUpdate := UpdateBias;
+    FBiasCount := FLayer.BiasesCount;
+    FBiasCount1 := FBiasCount - 1;
+    SetLength( FBiasesV, FBiasCount );
+    FillChar( FBiasesV[ 0 ], FBiasCount * SizeOf(NNFloat), 0);
+  end;
 end;
 
 procedure TNNRMSProp.UpdateBias;
 var
   i: int32;
   v: NNFloat;
-  WeightsV, BiasesV: PNNFloat;
+  WeightsV, BiasesV, Weights, WeightGrads, Biases, BiasGrads: PNNFloat;
 begin
   // Копируем указатели для итерации
   WeightsV := @FWeightsV[ 0 ];
   BiasesV := @FBiasesV[ 0 ];
 
+  WeightGrads := FLayer.WeightGrads;
+  Weights := FLayer.Weights;
+
+  BiasGrads := FLayer.BiasGrads;
+  Biases := FLayer.Biases;
+
   // Обновление весов
-  for i := 0 to AWeightCount - 1 do begin
+  for i := 0 to FWeightCount1 do begin
     // Среднее квадратов градиентов: v = rho * v + (1 - rho) * grad^2
-    WeightsV^ := FRho * WeightsV^ + (1 - FRho) * Sqr(AWeightGrads^);
+    WeightsV^ := FRho * WeightsV^ + (1 - FRho) * Sqr( WeightGrads^ );
     // Обновление веса: w = w - learning_rate * grad / (sqrt(v) + epsilon)
-    AWeights^ := AWeights^ - FLearningRate * AWeightGrads^ / (Sqrt(WeightsV^) + FEpsilon);
-    Inc(AWeights);
-    Inc(AWeightGrads);
-    Inc(WeightsV);
+    Weights^ := Weights^ - FLearningRate * WeightGrads^ / (Sqrt(WeightsV^) + FEpsilon);
+    Inc( Weights );
+    Inc( WeightGrads );
+    Inc( WeightsV );
   end;
 
   // Обновление смещений
-  for i := 0 to ABiasCount - 1 do begin
+  for i := 0 to FBiasCount1 do begin
     // Среднее квадратов градиентов
-    BiasesV^ := FRho * BiasesV^ + (1 - FRho) * Sqr(ABiasGrads^);
+    BiasesV^ := FRho * BiasesV^ + (1 - FRho) * Sqr( BiasGrads^ );
     // Обновление смещения
-    ABiases^ := ABiases^ - FLearningRate * ABiasGrads^ / (Sqrt(BiasesV^) + FEpsilon);
-    Inc(ABiases);
-    Inc(ABiasGrads);
-    Inc(BiasesV);
+    Biases^ := Biases^ - FLearningRate * BiasGrads^ / (Sqrt(BiasesV^) + FEpsilon);
+    Inc( Biases );
+    Inc( BiasGrads );
+    Inc( BiasesV );
   end;
 end;
 
-
 procedure TNNRMSProp.UpdateNoBias;
+var
+  i: int32;
+  v: NNFloat;
+  WeightsV, Weights, WeightGrads: PNNFloat;
 begin
+  // Копируем указатели для итерации
+  WeightsV := @FWeightsV[ 0 ];
 
+  WeightGrads := FLayer.WeightGrads;
+  Weights := FLayer.Weights;
+
+  // Обновление весов
+  for i := 0 to FWeightCount1 do begin
+    // Среднее квадратов градиентов: v = rho * v + (1 - rho) * grad^2
+    WeightsV^ := FRho * WeightsV^ + (1 - FRho) * Sqr( WeightGrads^ );
+    // Обновление веса: w = w - learning_rate * grad / (sqrt(v) + epsilon)
+    Weights^ := Weights^ - FLearningRate * WeightGrads^ / (Sqrt(WeightsV^) + FEpsilon);
+    Inc( Weights );
+    Inc( WeightGrads );
+    Inc( WeightsV );
+  end;
 end;
 
 end.
